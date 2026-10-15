@@ -1,0 +1,437 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03F7EF1BE98750CF9CE0EF62 /* PasswordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07F5AF9A467C02C03179492 /* PasswordStore.swift */; };
+		1372181A80E2A90E1DD7C147 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 88606FD796C00456D49EC2AD /* Assets.xcassets */; };
+		1436FD3DFDC77C9FCEEEF030 /* LogPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09FA5D1478CED0844CA69D9 /* LogPage.swift */; };
+		17C34202527F98DE03CDB5DE /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 4E3B50E3AF82A02A5D89E7E9 /* Localizable.xcstrings */; };
+		1C1FF56ABCB3FABCABCB9D0D /* OverviewPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B04E95E029C353FBA8B785A /* OverviewPage.swift */; };
+		2640C812F58D21E758802B55 /* HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1DAFF4533C0169E1179CD77 /* HUD.swift */; };
+		377A1808C022F06D034E69B8 /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F66EB0142592E41EE4F059 /* SettingsPage.swift */; };
+		3BF4609A16C1C96870AF2174 /* PasswordPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91BA8A72F67943047AF06702 /* PasswordPage.swift */; };
+		4F4974251FEA5C2DD0C3FFB7 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4346A28A9ED69F55872D4BA4 /* MenuBarView.swift */; };
+		6D7C9A1DA987C44678184137 /* KeyboardLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05F6D6E0C17B044D5EA2CC3 /* KeyboardLink.swift */; };
+		75F81A7450672D0E807AC91E /* FingerprintsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0DE91383DB9A040AB3EC80A /* FingerprintsPage.swift */; };
+		8E73A387EFBFE17540A5A48B /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761DC2932D73F9453FF560D0 /* Components.swift */; };
+		AC5F6C0F648E9C61451CBBB4 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E590D4CF61C4643C4356D811 /* InfoPlist.xcstrings */; };
+		BBFF5FE2509B95A55F9C314D /* MacStateMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6C39700A8DCB687BDDD937 /* MacStateMonitor.swift */; };
+		C44604AA2A6988F3E4FFEE9E /* FocusMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339B344086C222526CD36BA7 /* FocusMonitor.swift */; };
+		D38578DC821C73DAF9BBEE97 /* DurianCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4EE6E26968AC0C86A5AA6E45 /* DurianCore */; };
+		DAF4069943BA41F272887E17 /* TouchUnlockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C96B6CB7C1B46F65C48F3A /* TouchUnlockApp.swift */; };
+		DD046B9580BF127BD8F70B96 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A138F3D26BF414BA34C0DE9A /* RootView.swift */; };
+		FD351C3A218713143E3D7977 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 860EBFE10DFF0CAAF4DB9F90 /* AppModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0C6C39700A8DCB687BDDD937 /* MacStateMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacStateMonitor.swift; sourceTree = "<group>"; };
+		339B344086C222526CD36BA7 /* FocusMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusMonitor.swift; sourceTree = "<group>"; };
+		4346A28A9ED69F55872D4BA4 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		4E3B50E3AF82A02A5D89E7E9 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		64F66EB0142592E41EE4F059 /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
+		761DC2932D73F9453FF560D0 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		7B04E95E029C353FBA8B785A /* OverviewPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewPage.swift; sourceTree = "<group>"; };
+		860EBFE10DFF0CAAF4DB9F90 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		88606FD796C00456D49EC2AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		91BA8A72F67943047AF06702 /* PasswordPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordPage.swift; sourceTree = "<group>"; };
+		99C96B6CB7C1B46F65C48F3A /* TouchUnlockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchUnlockApp.swift; sourceTree = "<group>"; };
+		A138F3D26BF414BA34C0DE9A /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		B07F5AF9A467C02C03179492 /* PasswordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordStore.swift; sourceTree = "<group>"; };
+		C09FA5D1478CED0844CA69D9 /* LogPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogPage.swift; sourceTree = "<group>"; };
+		D05F6D6E0C17B044D5EA2CC3 /* KeyboardLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLink.swift; sourceTree = "<group>"; };
+		D1DAFF4533C0169E1179CD77 /* HUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUD.swift; sourceTree = "<group>"; };
+		E0DE91383DB9A040AB3EC80A /* FingerprintsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintsPage.swift; sourceTree = "<group>"; };
+		E4824E7B1F33EDA8890EA850 /* TouchUnlock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TouchUnlock.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E590D4CF61C4643C4356D811 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		FB937D81F70E0A391E9C72DC /* touchunlock */ = {isa = PBXFileReference; lastKnownFileType = folder; name = touchunlock; path = .; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DFC8E1F649AAC0372534C89D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D38578DC821C73DAF9BBEE97 /* DurianCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0DAB69B7B086FC9158EC7500 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				761DC2932D73F9453FF560D0 /* Components.swift */,
+				E0DE91383DB9A040AB3EC80A /* FingerprintsPage.swift */,
+				C09FA5D1478CED0844CA69D9 /* LogPage.swift */,
+				4346A28A9ED69F55872D4BA4 /* MenuBarView.swift */,
+				7B04E95E029C353FBA8B785A /* OverviewPage.swift */,
+				91BA8A72F67943047AF06702 /* PasswordPage.swift */,
+				A138F3D26BF414BA34C0DE9A /* RootView.swift */,
+				64F66EB0142592E41EE4F059 /* SettingsPage.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		2F791B480E164D2FFD36C2B6 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				FB937D81F70E0A391E9C72DC /* touchunlock */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		6D3896AF0F6583B104177E17 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				860EBFE10DFF0CAAF4DB9F90 /* AppModel.swift */,
+				339B344086C222526CD36BA7 /* FocusMonitor.swift */,
+				D1DAFF4533C0169E1179CD77 /* HUD.swift */,
+				D05F6D6E0C17B044D5EA2CC3 /* KeyboardLink.swift */,
+				0C6C39700A8DCB687BDDD937 /* MacStateMonitor.swift */,
+				B07F5AF9A467C02C03179492 /* PasswordStore.swift */,
+				99C96B6CB7C1B46F65C48F3A /* TouchUnlockApp.swift */,
+				D0A951B5FBE510325D840441 /* Resources */,
+				0DAB69B7B086FC9158EC7500 /* Views */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		7253AAB46EC80439B39E6556 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E4824E7B1F33EDA8890EA850 /* TouchUnlock.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A52BAB74D2D57DDB1F8F7B57 = {
+			isa = PBXGroup;
+			children = (
+				6D3896AF0F6583B104177E17 /* App */,
+				2F791B480E164D2FFD36C2B6 /* Packages */,
+				7253AAB46EC80439B39E6556 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D0A951B5FBE510325D840441 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				88606FD796C00456D49EC2AD /* Assets.xcassets */,
+				E590D4CF61C4643C4356D811 /* InfoPlist.xcstrings */,
+				4E3B50E3AF82A02A5D89E7E9 /* Localizable.xcstrings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		025A38BFA87BB8746A3324CA /* TouchUnlock */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1CF306C8E0B0746383596E2E /* Build configuration list for PBXNativeTarget "TouchUnlock" */;
+			buildPhases = (
+				E07D6B833002095E2689777E /* Sources */,
+				87A0AF5F14EEC853253CB223 /* Resources */,
+				DFC8E1F649AAC0372534C89D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TouchUnlock;
+			packageProductDependencies = (
+				4EE6E26968AC0C86A5AA6E45 /* DurianCore */,
+			);
+			productName = TouchUnlock;
+			productReference = E4824E7B1F33EDA8890EA850 /* TouchUnlock.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D6069D70261C9072CC5A4799 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					025A38BFA87BB8746A3324CA = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 8D7147851FFA6E0901DA743B /* Build configuration list for PBXProject "TouchUnlock" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+				"zh-Hans",
+			);
+			mainGroup = A52BAB74D2D57DDB1F8F7B57;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				55BA82A90336ABBE46F4AAC5 /* XCLocalSwiftPackageReference "." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7253AAB46EC80439B39E6556 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				025A38BFA87BB8746A3324CA /* TouchUnlock */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		87A0AF5F14EEC853253CB223 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1372181A80E2A90E1DD7C147 /* Assets.xcassets in Resources */,
+				AC5F6C0F648E9C61451CBBB4 /* InfoPlist.xcstrings in Resources */,
+				17C34202527F98DE03CDB5DE /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E07D6B833002095E2689777E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FD351C3A218713143E3D7977 /* AppModel.swift in Sources */,
+				8E73A387EFBFE17540A5A48B /* Components.swift in Sources */,
+				75F81A7450672D0E807AC91E /* FingerprintsPage.swift in Sources */,
+				C44604AA2A6988F3E4FFEE9E /* FocusMonitor.swift in Sources */,
+				2640C812F58D21E758802B55 /* HUD.swift in Sources */,
+				6D7C9A1DA987C44678184137 /* KeyboardLink.swift in Sources */,
+				1436FD3DFDC77C9FCEEEF030 /* LogPage.swift in Sources */,
+				BBFF5FE2509B95A55F9C314D /* MacStateMonitor.swift in Sources */,
+				4F4974251FEA5C2DD0C3FFB7 /* MenuBarView.swift in Sources */,
+				1C1FF56ABCB3FABCABCB9D0D /* OverviewPage.swift in Sources */,
+				3BF4609A16C1C96870AF2174 /* PasswordPage.swift in Sources */,
+				03F7EF1BE98750CF9CE0EF62 /* PasswordStore.swift in Sources */,
+				DD046B9580BF127BD8F70B96 /* RootView.swift in Sources */,
+				377A1808C022F06D034E69B8 /* SettingsPage.swift in Sources */,
+				DAF4069943BA41F272887E17 /* TouchUnlockApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C26F50E03AA16504A10549D4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		CFD4B9EFCDC62BFF04700A9B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Support/TouchUnlock.entitlements;
+				CODE_SIGN_IDENTITY = "TouchUnlock Local Signing";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Support/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = local.touchunlock.TouchUnlock;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E4FDF6B089834498799B4AFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Support/TouchUnlock.entitlements;
+				CODE_SIGN_IDENTITY = "TouchUnlock Local Signing";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_DEBUG_DYLIB = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Support/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = local.touchunlock.TouchUnlock;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		FD21FEE3CB8167EDEB404BE3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1CF306C8E0B0746383596E2E /* Build configuration list for PBXNativeTarget "TouchUnlock" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E4FDF6B089834498799B4AFC /* Debug */,
+				CFD4B9EFCDC62BFF04700A9B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8D7147851FFA6E0901DA743B /* Build configuration list for PBXProject "TouchUnlock" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FD21FEE3CB8167EDEB404BE3 /* Debug */,
+				C26F50E03AA16504A10549D4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		55BA82A90336ABBE46F4AAC5 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4EE6E26968AC0C86A5AA6E45 /* DurianCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DurianCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = D6069D70261C9072CC5A4799 /* Project object */;
+}

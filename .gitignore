@@ -1,0 +1,25 @@
+# 固件镜像：nvs 分区里有指纹绑定的明文密码，绝不入库
+backup/
+
+# 构建产物
+.build/
+.cache/
+DerivedData/
+*.xcuserstate
+
+# Xcode 用户数据
+xcuserdata/
+.swiftpm/xcode/package.xcworkspace/xcuserdata/
+
+# macOS
+.DS_Store
+
+# 逆向笔记与固件补丁脚本：含设备内部实现、厂商配套应用的问题、补丁字节，
+# 不适合公开，只留在本机
+docs/PROTOCOL.md
+scripts/patch_firmware_v3.py
+AGENTS.md
+
+# Python
+__pycache__/
+*.pyc
