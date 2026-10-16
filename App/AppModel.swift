@@ -364,10 +364,8 @@ final class AppModel {
 
     /// 武装位 = 设备现在该不该键入。
     ///
-    /// - 锁屏或屏保：恒为 true。设备用系统密码解锁锁屏（第 1、3 条需求），
-    ///   这类场景 app 看不到也不需要看到前台窗口。
-    /// - 未锁屏：只看前台有没有正在等密码的输入框（第 5 条需求）。没有就不武装，
-    ///   设备即使识别成功也不会往任何窗口里键入。
+    /// 只要应用在运行且已连上设备就恒为 true：软件运行时硬件才有用，与锁屏、
+    /// 前台窗口无关。应用退出或崩溃时由 `assistOff` / 心跳超时让设备停止键入。
     private func refreshArmedState() {
         let armed = currentArmedState
         monitor.setAllowsTyping(armed)
@@ -375,7 +373,7 @@ final class AppModel {
         refreshIndicator()
     }
     private var currentArmedState: Bool {
-        monitor.state.isScreenLocked || monitor.state.isScreensaver || focus.passwordInputFocused
+        true
     }
 
     /// 让设备开始或停止键入。
