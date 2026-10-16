@@ -101,6 +101,9 @@ final class AppModel {
     /// 这一轮重绑下发的密码是「系统密码」还是「各指纹自己的密码」。
     /// 设备当前是否处于武装状态（激活位已置）。避免重复下发 ble=1 / ble=2。
     @ObservationIgnored private var deviceArmed = false
+    /// 心跳期间持有的活动凭证。没有它，只驻菜单栏的应用会被系统节流（App Nap），
+    /// 0.7 秒的定时器可能被拉长到超过固件 2 秒的超时，设备就会时断时续地停止键入。
+    @ObservationIgnored private var heartbeatActivity: NSObjectProtocol?
     /// 最近一次武装的时刻。设备键入要花几百毫秒，期间焦点可能已经变了，
     /// 所以判断「这次键入是不是我们让它做的」不能只看当下的 deviceArmed。
     @ObservationIgnored private var lastArmedAt: Date?
@@ -328,11 +331,17 @@ final class AppModel {
         // 设备停止键入，用户按压指纹没有反应。
         RunLoop.main.add(timer, forMode: .common)
         heartbeat = timer
+        if heartbeatActivity == nil {
+            heartbeatActivity = ProcessInfo.processInfo.beginActivity(
+                options: [.userInitiatedAllowingIdleSystemSleep], reason: "Heartbeat to the fingerprint device")
+        }
     }
 
     private func stopHeartbeat() {
         heartbeat?.invalidate()
         heartbeat = nil
+        if let activity = heartbeatActivity { ProcessInfo.processInfo.endActivity(activity) }
+        heartbeatActivity = nil
     }
 
     /// 连上时按当前武装状态决定要不要起心跳（`refreshArmedState` 已在前面跑过，
