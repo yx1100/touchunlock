@@ -84,7 +84,7 @@ final class AppModel {
 
     @ObservationIgnored private let client = BLEClient()
     @ObservationIgnored private let monitor = MacStateMonitor()
-    /// 前台是否有窗口在等密码。决定未锁屏时设备该不该键入。
+    /// 前台是否有窗口在等密码。只用于指示灯，不影响设备能否键入。
     @ObservationIgnored private let focus = FocusMonitor()
     /// 屏幕顶部的提示面板。
     @ObservationIgnored let hud = HUD()
@@ -356,7 +356,7 @@ final class AppModel {
 
     private func macStateChanged(_ state: MacState) {
         macState = state
-        // 锁屏、屏保状态会影响武装位，先重新判定再上报。
+        // 锁屏、屏保状态变化后重新上报；武装位不受影响。
         refreshArmedState()
         sendMacReport()
         // 锁屏期间设备必须输入系统密码（需求 3），解锁后恢复各自单独设置的密码。
@@ -724,7 +724,7 @@ final class AppModel {
 
         case .defaultPasswordSet(let ok): defaultPasswordResult(ok)
         case .passwordSet(let ok): passwordBindResult(ok)
-        // 设备键入完成后主动推送。设备只在武装（锁屏，或前台有密码输入框）时才会键入。
+        // 设备键入完成后主动推送。应用连上设备期间设备都处于武装状态。
         case .passwordTyped:
             // 设备只在武装状态下才该键入。没武装过却收到这条，说明状态没对上（或设备
             // 自说自话），这时绝不能弹「密码已输入」——字符落在哪里根本没人知道。
