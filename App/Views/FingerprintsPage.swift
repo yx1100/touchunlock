@@ -14,11 +14,13 @@ struct FingerprintsPage: View {
     private enum EditTarget: Identifiable {
         case password(Int)
         case rename(Int)
+        case shortcut(Int)
 
         var id: String {
             switch self {
             case .password(let id): return "password-\(id)"
             case .rename(let id): return "rename-\(id)"
+            case .shortcut(let id): return "shortcut-\(id)"
             }
         }
     }
@@ -49,8 +51,10 @@ struct FingerprintsPage: View {
                             name: model.displayName(for: id),
                             canEdit: model.isReady,
                             hasCustomPassword: model.hasCustomPassword(id),
+                            shortcut: model.shortcut(for: id)?.display,
                             flashing: model.flashingFingerprint == id,
                             editPassword: { editing = .password(id) },
+                            editShortcut: { editing = .shortcut(id) },
                             rename: { editing = .rename(id) },
                             delete: { pendingDelete = id })
                     }
@@ -73,13 +77,16 @@ struct FingerprintsPage: View {
                     Spacer()
 
                     // 只有一个测试入口：测「任意已录入的手指」，由面板给出结果。
+                    // 一枚指纹都没录入时没有可测的对象，禁用并说明原因，
+                    // 否则点下去只能等到识别超时。
                     Button {
                         model.startFingerprintTest()
                     } label: {
                         Label("Test", systemImage: "hand.point.up.left")
                     }
                     .disabled(blocker != nil || model.enroll.isBusy || model.isRebinding
-                              || model.fingerprintTest != nil)
+                              || model.fingerprintTest != nil || ids.isEmpty)
+                    .help(ids.isEmpty ? "Add a fingerprint first." : "Test the reader")
                 }
             } footer: {
                 if let blocker {
@@ -102,6 +109,8 @@ struct FingerprintsPage: View {
                 FingerprintPasswordSheet(model: model, id: id)
             case .rename(let id):
                 FingerprintRenameSheet(model: model, id: id)
+            case .shortcut(let id):
+                FingerprintShortcutSheet(model: model, id: id)
             }
         }
         .alert("Delete this fingerprint?", isPresented: Binding(
@@ -134,9 +143,12 @@ private struct FingerprintRow: View {
     let name: String
     let canEdit: Bool
     let hasCustomPassword: Bool
+    /// 已绑定快捷键的显示文本；nil 表示没有。
+    let shortcut: String?
     /// 刚被识别到，行背景闪几下。
     let flashing: Bool
     let editPassword: () -> Void
+    let editShortcut: () -> Void
     let rename: () -> Void
     let delete: () -> Void
 
@@ -147,7 +159,15 @@ private struct FingerprintRow: View {
             IconBadge(systemName: "touchid", color: .pink, size: 28,
                       scale: 0.90, nudge: CGSize(width: -0.0043, height: 0.0043))
             VStack(alignment: .leading, spacing: 2) {
-                Text(name)
+                HStack(spacing: 6) {
+                    Text(name)
+                    Button(action: rename) {
+                        Image(systemName: "pencil")
+                    }
+                    .buttonStyle(.borderless)
+                    .help("Rename")
+                    .disabled(!canEdit)
+                }
                 Text(hasCustomPassword ? "Has its own password" : "Uses the system password")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -155,11 +175,9 @@ private struct FingerprintRow: View {
             Spacer()
             Button("Password…", action: editPassword)
                 .disabled(!canEdit)
-            Button(action: rename) {
-                Image(systemName: "pencil")
+            Button(action: editShortcut) {
+                if let shortcut { Text(verbatim: shortcut) } else { Text("Shortcut…") }
             }
-            .help("Rename")
-            .disabled(!canEdit)
             Button(role: .destructive, action: delete) {
                 Image(systemName: "trash")
             }
@@ -200,7 +218,7 @@ private struct FingerprintRenameSheet: View {
         VStack(alignment: .leading, spacing: 14) {
             Label("Rename Fingerprint \(id)", systemImage: "pencil")
                 .font(.headline)
-            Text("The name is kept on this Mac only. The device stores fingerprints by number, so a name never travels with the reader.")
+            Text("The name is kept on this Mac only. Fingerprints are stored by number on the device.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -229,6 +247,74 @@ private struct FingerprintRenameSheet: View {
     }
 }
 
+/// 给某枚指纹绑定快捷键：没有窗口在等密码时按这枚指纹，就发出这组按键。
+private struct FingerprintShortcutSheet: View {
+    let model: AppModel
+    let id: Int
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var shortcut: Shortcut?
+    @State private var recording = false
+    @State private var monitor: Any?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Label("Fingerprint \(id)", systemImage: "touchid")
+                .font(.headline)
+            Text("Presses this shortcut when the finger is recognized and no window is asking for a password.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Button(action: toggleRecording) {
+                Group {
+                    if recording { Text("Press a shortcut…") }
+                    else if let shortcut { Text(verbatim: shortcut.display) }
+                    else { Text("Click to Record") }
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .controlSize(.large)
+
+            HStack {
+                if shortcut != nil {
+                    Button("Clear") { shortcut = nil }
+                }
+                Spacer()
+                Button("Cancel") { dismiss() }
+                    .keyboardShortcut(.cancelAction)
+                Button("Save") {
+                    model.setShortcut(shortcut, for: id)
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
+                .keyboardShortcut(.defaultAction)
+            }
+        }
+        .padding(22)
+        .frame(width: 400)
+        .onAppear { shortcut = model.shortcut(for: id) }
+        .onDisappear(perform: stopRecording)
+    }
+
+    private func toggleRecording() {
+        if recording { stopRecording(); return }
+        recording = true
+        // 录制期间吞掉所有按键，免得触发 sheet 自己的 Esc/回车快捷键。
+        monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            if event.keyCode != 53 { shortcut = Shortcut(event: event) }
+            stopRecording()
+            return nil
+        }
+    }
+
+    private func stopRecording() {
+        if let monitor { NSEvent.removeMonitor(monitor) }
+        monitor = nil
+        recording = false
+    }
+}
+
 /// 给某枚指纹单独设置密码。锁屏时设备一律用系统密码，这个设置只在未锁屏、
 /// 且前台有窗口在等密码时生效。
 private struct FingerprintPasswordSheet: View {
@@ -244,7 +330,7 @@ private struct FingerprintPasswordSheet: View {
         VStack(alignment: .leading, spacing: 14) {
             Label("Fingerprint \(id)", systemImage: "touchid")
                 .font(.headline)
-            Text("When a window is asking for a password, this fingerprint types the password set here. At the lock screen the system password is always used.")
+            Text("Types this password when a window is asking for one. The lock screen always uses the system password.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

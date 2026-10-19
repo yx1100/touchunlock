@@ -1,5 +1,7 @@
 import DurianCore
+import AppKit
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SettingsPage: View {
     let model: AppModel
@@ -10,7 +12,7 @@ struct SettingsPage: View {
     var body: some View {
         Form {
             Section {
-                Label("The device types the password only while this app is running. When the app is not running, touching the sensor does nothing.", systemImage: "checkmark.shield.fill")
+                Label("The device types the password only while this app is running.", systemImage: "checkmark.shield.fill")
                     .foregroundStyle(.secondary)
             } header: {
                 Text("How It Works")
@@ -31,14 +33,14 @@ struct SettingsPage: View {
                     LabeledContent {
                         Button("Open System Settings…") { model.openAccessibilitySettings() }
                     } label: {
-                        Text("Already said no once?")
+                        Text("Already denied once?")
                             .foregroundStyle(.secondary)
                     }
                 }
             } header: {
                 Text("Permissions")
             } footer: {
-                Text("TouchUnlock reads whether the frontmost window is asking for a password, so the reader types only when there is somewhere to type. Without this permission it can still notice secure password prompts, but not every password field. You will find the switch in System Settings → Privacy & Security → Device Control and Data Access.")
+                Text("Lets the app tell when a window is asking for a password. Without it only secure password prompts are recognized.")
             }
 
             Section {
@@ -51,7 +53,22 @@ struct SettingsPage: View {
             } header: {
                 Text("Feedback")
             } footer: {
-                Text("A small panel appears at the top of the screen after the device types a password, and after a manual test from the Fingerprints page. The reader's light blinks slowly while a window is asking for a password, so you know the reader will type when you touch it.")
+                Text("A panel appears after the device types a password or a manual test runs. The reader's light blinks while a window is asking for a password.")
+            }
+
+            Section {
+                ForEach(model.ignoredApps, id: \.self) { id in
+                    LabeledContent {
+                        Button("Remove") { model.removeIgnoredApp(id) }
+                    } label: {
+                        ignoredAppLabel(id)
+                    }
+                }
+                Button("Add App…") { chooseIgnoredApp() }
+            } header: {
+                Text("Ignored Apps")
+            } footer: {
+                Text("The device does not type a password while one of these apps is in front. The lock screen is not affected.")
             }
 
             Section {
@@ -74,14 +91,14 @@ struct SettingsPage: View {
                     Label("Bluetooth Settings", systemImage: "wave.3.right")
                 }
                 LabeledContent {
-                    Button("Forget", role: .destructive) { confirmForget = true }
+                    Button("Search Again") { confirmForget = true }
                 } label: {
-                    Label("Forget This Device", systemImage: "link.badge.plus")
+                    Label("Search for the Device Again", systemImage: "arrow.clockwise")
                 }
             } header: {
                 Text("Device")
             } footer: {
-                Text("Forgetting only makes the app look for a device again. It does not erase anything on the device.")
+                Text("Use this when the app cannot find the device, for example after pairing it again in Bluetooth settings. Nothing on the device is erased.")
             }
 
             Section {
@@ -91,32 +108,31 @@ struct SettingsPage: View {
                 } label: {
                     Label("Pair with This Mac", systemImage: "link")
                 }
-
-                // 折叠起来：配对是一次性设置，平时不该占着版面。
-                DisclosureGroup(isExpanded: $showPairingHelp) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        pairingStep(1, "Press and hold the button on the reader for more than 3 seconds.")
-                        pairingStep(2, "The light starts blinking quickly, which means it is in pairing mode.")
-                        pairingStep(3, "Pairing mode lasts about a minute, and a short press ends it early.")
-                        Label("Pairing again replaces the device this reader was bound to before.", systemImage: "exclamationmark.triangle")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.top, 6)
-                    .padding(.leading, 2)
-                } label: {
-                    Label("Enter Pairing Mode", systemImage: "light.beacon.max")
-                }
             } header: {
                 Text("Advanced")
             } footer: {
-                Text("Only needed when the reader has to learn this Mac again, for example after forgetting it in Bluetooth settings.")
+                Text("Needed only when the reader has to learn this Mac again, for example after it was forgotten in Bluetooth settings.")
+            }
+
+            // 用可折叠 Section 而不是 DisclosureGroup：后者的内容会被缩进到标签列下方，
+            // 只剩正文一半的宽度，中英文长句都要折行。Section 展开后是标准表单行，占满宽度。
+            Section(isExpanded: $showPairingHelp) {
+                pairingStep(1, "Press and hold the button on the reader for 3 seconds.")
+                pairingStep(2, "The light blinks quickly to confirm pairing mode.")
+                pairingStep(3, "Pairing mode lasts about a minute; a short press ends it early.")
+                Label("Pairing replaces the device this reader was bound to before.",
+                      systemImage: "exclamationmark.triangle.fill")
+                    .font(.callout)
+                    .foregroundStyle(.orange)
+                    .listRowBackground(Color.orange.opacity(0.10))
+            } header: {
+                Label("Enter Pairing Mode", systemImage: "light.beacon.max")
             }
 
             Section {
-                privacyRow("wifi.slash", "No network access. The app has no networking code.")
-                privacyRow("antenna.radiowaves.left.and.right", "Bluetooth is the only permission it asks for.")
-                privacyRow("key.fill", "The password copy stays in the keychain of this Mac.")
+                privacyRow("wifi.slash", "No network access. The app contains no networking code.")
+                privacyRow("antenna.radiowaves.left.and.right", "Bluetooth is the only permission it requests.")
+                privacyRow("key.fill", "The password copy stays in this Mac's keychain.")
                 privacyRow("text.alignleft", "The log never contains passwords.")
             } header: {
                 Text("Privacy")
@@ -129,12 +145,32 @@ struct SettingsPage: View {
             }
         }
         .formStyle(.grouped)
-        .confirmationDialog("Forget this device?", isPresented: $confirmForget, titleVisibility: .visible) {
-            Button("Forget Device", role: .destructive) { model.forgetDevice() }
+        .confirmationDialog("Search for the device again?", isPresented: $confirmForget, titleVisibility: .visible) {
+            Button("Search Again") { model.forgetDevice() }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("The app will search for a device again.")
+            Text("The app restarts its search. Nothing on the device is erased.")
         }
+    }
+
+    private func ignoredAppLabel(_ bundleID: String) -> some View {
+        let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)
+        return Label {
+            Text(verbatim: url.map { FileManager.default.displayName(atPath: $0.path).replacingOccurrences(of: ".app", with: "") } ?? bundleID)
+        } icon: {
+            Image(nsImage: url.map { NSWorkspace.shared.icon(forFile: $0.path) } ?? NSImage())
+                .resizable().frame(width: 20, height: 20)
+        }
+    }
+
+    private func chooseIgnoredApp() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.application]
+        panel.directoryURL = URL(fileURLWithPath: "/Applications")
+        panel.message = String(localized: "Choose an app to ignore")
+        panel.allowsMultipleSelection = true
+        guard panel.runModal() == .OK else { return }
+        panel.urls.forEach(model.addIgnoredApp(at:))
     }
 
     private func privacyRow(_ symbol: String, _ text: LocalizedStringKey) -> some View {
@@ -145,16 +181,18 @@ struct SettingsPage: View {
         }
     }
 
-    /// 配对步骤：编号与正文按第一行基线对齐，编号列定宽，多行文本不缩进错位。
+    /// 配对步骤：编号用圆形徽标，比单纯的右对齐数字更清楚，也不会随行宽错位。
     private func pairingStep(_ index: Int, _ text: LocalizedStringKey) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
             Text(verbatim: "\(index)")
                 .font(.caption.weight(.semibold).monospacedDigit())
                 .foregroundStyle(.secondary)
-                .frame(width: 10, alignment: .trailing)
+                .frame(width: 20, height: 20)
+                .background(Circle().fill(Color.secondary.opacity(0.14)))
             Text(text)
                 .font(.callout)
                 .fixedSize(horizontal: false, vertical: true)
         }
+        .padding(.vertical, 2)
     }
 }

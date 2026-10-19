@@ -42,7 +42,7 @@ struct OverviewPage: View {
     private var allDone: Bool { steps.allSatisfy { $0.state == .done } }
 
     private var notice: LocalizedStringKey {
-        "The device types the password only while TouchUnlock is running. Quit the app and touching the sensor does nothing, so keep the app running and turn on Open at Login in Settings. Fingerprint unlock at the lock screen keeps working as long as the app is running."
+        "The device types the password only while this app is running. Keep it running and turn on Open at Login."
     }
 
     var body: some View {
@@ -64,7 +64,7 @@ struct OverviewPage: View {
                 // 已授权就换成一条确认，不再继续劝——重复提示只会让人当噪声划过去。
                 if model.hasAccessibilityPermission {
                     Label {
-                        Text("Device Control and Data Access is allowed, so TouchUnlock can tell when a window is asking for a password.")
+                        Text("Device Control and Data Access is allowed.")
                             .fixedSize(horizontal: false, vertical: true)
                     } icon: {
                         Image(systemName: "checkmark.shield.fill")
@@ -73,7 +73,7 @@ struct OverviewPage: View {
                 } else {
                     Label {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Allow Device Control and Data Access so TouchUnlock can tell when a window is asking for a password. Without it, a finger press only types at secure password prompts.")
+                            Text("Allow Device Control and Data Access so the app can tell when a window is asking for a password.")
                                 .fixedSize(horizontal: false, vertical: true)
                             HStack(spacing: 12) {
                                 Button("Allow…") { model.requestAccessibilityPermission() }
@@ -88,10 +88,6 @@ struct OverviewPage: View {
                 }
             } header: {
                 Text("Good to Know")
-            } footer: {
-                if !model.hasAccessibilityPermission {
-                    Text("System Settings → Privacy & Security → Device Control and Data Access. If the switch there is already on, remove TouchUnlock from the list and add it again.")
-                }
             }
         }
         .formStyle(.grouped)

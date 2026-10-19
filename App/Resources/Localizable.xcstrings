@@ -46,13 +46,13 @@
         }
       }
     },
-    "A small panel appears at the top of the screen after the device types a password, and after a manual test from the Fingerprints page. The reader's light blinks slowly while a window is asking for a password, so you know the reader will type when you touch it.": {
+    "A panel appears after the device types a password or a manual test runs. The reader's light blinks while a window is asking for a password.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "设备输入密码之后、以及在指纹页手动测试之后，屏幕顶部会出现一个小提示面板。有窗口在等密码时识别器的灯会慢闪，提示你现在按指纹就会输入。"
+            "value": "设备输入密码后或手动测试后会显示提示面板。有窗口在等待密码时，识别器指示灯闪烁。"
           }
         }
       }
@@ -68,6 +68,17 @@
         }
       }
     },
+    "Add App…": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添加应用…"
+          }
+        }
+      }
+    },
     "Add Fingerprint": {
       "extractionState": "manual",
       "localizations": {
@@ -75,6 +86,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "添加指纹"
+          }
+        }
+      }
+    },
+    "Add a fingerprint first.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先添加一枚指纹。"
           }
         }
       }
@@ -112,13 +134,13 @@
         }
       }
     },
-    "Allow Device Control and Data Access so TouchUnlock can tell when a window is asking for a password. Without it, a finger press only types at secure password prompts.": {
+    "Allow Device Control and Data Access so the app can tell when a window is asking for a password.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "请允许「设备控制和数据访问」，触达才能判断前台窗口是不是在等密码。没有这个权限时，只有屏幕上出现安全密码输入提示时按压指纹才会输入。"
+            "value": "请允许「设备控制和数据访问」，应用需要据此判断窗口是否在等待密码。"
           }
         }
       }
@@ -156,13 +178,13 @@
         }
       }
     },
-    "Already said no once?": {
+    "Already denied once?": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "之前拒绝过？"
+            "value": "此前拒绝过？"
           }
         }
       }
@@ -222,13 +244,13 @@
         }
       }
     },
-    "Bluetooth is the only permission it asks for.": {
+    "Bluetooth is the only permission it requests.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "应用只申请蓝牙这一项权限。"
+            "value": "只申请蓝牙一项权限。"
           }
         }
       }
@@ -244,6 +266,28 @@
         }
       }
     },
+    "Choose an app to ignore": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择要忽略的应用"
+          }
+        }
+      }
+    },
+    "Clear": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清除"
+          }
+        }
+      }
+    },
     "Clear Log": {
       "extractionState": "manual",
       "localizations": {
@@ -251,6 +295,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "清除日志"
+          }
+        }
+      }
+    },
+    "Click to Record": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "点击录制"
           }
         }
       }
@@ -453,13 +508,13 @@
         }
       }
     },
-    "Device Control and Data Access is allowed, so TouchUnlock can tell when a window is asking for a password.": {
+    "Device Control and Data Access is allowed.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "已允许「设备控制和数据访问」，触达可以判断前台窗口是不是在等密码。"
+            "value": "已允许「设备控制和数据访问」。"
           }
         }
       }
@@ -695,61 +750,6 @@
         }
       }
     },
-    "Forget": {
-      "extractionState": "manual",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "忘记"
-          }
-        }
-      }
-    },
-    "Forget Device": {
-      "extractionState": "manual",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "忘记设备"
-          }
-        }
-      }
-    },
-    "Forget This Device": {
-      "extractionState": "manual",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "忘记此设备"
-          }
-        }
-      }
-    },
-    "Forget this device?": {
-      "extractionState": "manual",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "忘记此设备？"
-          }
-        }
-      }
-    },
-    "Forgetting only makes the app look for a device again. It does not erase anything on the device.": {
-      "extractionState": "manual",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "忘记设备只会让应用重新搜索设备，不会清除设备里的任何数据。"
-          }
-        }
-      }
-    },
     "General": {
       "extractionState": "manual",
       "localizations": {
@@ -805,6 +805,28 @@
         }
       }
     },
+    "Ignored Apps": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "忽略的应用"
+          }
+        }
+      }
+    },
+    "Lets the app tell when a window is asking for a password. Without it only secure password prompts are recognized.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用于判断前台窗口是否在等待密码。未授权时只能识别安全密码输入框。"
+          }
+        }
+      }
+    },
     "Linking the Password": {
       "extractionState": "manual",
       "localizations": {
@@ -812,6 +834,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "正在关联密码"
+          }
+        }
+      }
+    },
+    "Links new fingerprints and confirms deletions. It never leaves this Mac.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用于关联新指纹与确认删除操作。不会离开这台 Mac。"
           }
         }
       }
@@ -860,6 +893,28 @@
         }
       }
     },
+    "Needed only when the reader has to learn this Mac again, for example after it was forgotten in Bluetooth settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅在识别器需要重新认这台 Mac 时使用，例如曾在系统蓝牙中忘记过它。"
+          }
+        }
+      }
+    },
+    "New fingerprints will no longer link automatically, and deleting one will no longer ask for the password.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新录入的指纹将不再自动关联密码，删除指纹时也不再要求输入密码。"
+          }
+        }
+      }
+    },
     "No Fingerprints": {
       "extractionState": "manual",
       "localizations": {
@@ -904,13 +959,13 @@
         }
       }
     },
-    "No network access. The app has no networking code.": {
+    "No network access. The app contains no networking code.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "不联网。应用里没有任何网络代码。"
+            "value": "不联网。应用不含任何网络代码。"
           }
         }
       }
@@ -944,17 +999,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "本机"
-          }
-        }
-      }
-    },
-    "Only needed when the reader has to learn this Mac again, for example after forgetting it in Bluetooth settings.": {
-      "extractionState": "manual",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "只有在识别器需要重新认这台 Mac 时才用得着，例如你在系统蓝牙里把它忘记过。"
           }
         }
       }
@@ -1069,17 +1113,6 @@
         }
       }
     },
-    "Pairing again replaces the device this reader was bound to before.": {
-      "extractionState": "manual",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重新配对会覆盖此前绑定的设备。"
-          }
-        }
-      }
-    },
     "Pairing failed. Put the device into pairing mode first.": {
       "extractionState": "manual",
       "localizations": {
@@ -1091,13 +1124,24 @@
         }
       }
     },
-    "Pairing mode lasts about a minute, and a short press ends it early.": {
+    "Pairing mode lasts about a minute; a short press ends it early.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "配对模式持续约 1 分钟，短按指纹一次可提前退出。"
+            "value": "配对模式持续约 1 分钟，短按一次可提前结束。"
+          }
+        }
+      }
+    },
+    "Pairing replaces the device this reader was bound to before.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新配对会覆盖此前绑定的设备。"
           }
         }
       }
@@ -1190,13 +1234,35 @@
         }
       }
     },
-    "Press and hold the button on the reader for more than 3 seconds.": {
+    "Press a shortcut…": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "长按指纹模块上的按钮 3 秒以上。"
+            "value": "请按下快捷键…"
+          }
+        }
+      }
+    },
+    "Press and hold the button on the reader for 3 seconds.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "长按识别器上的按钮 3 秒。"
+          }
+        }
+      }
+    },
+    "Presses this shortcut when the finger is recognized and no window is asking for a password.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "识别到这根手指、且没有窗口在等密码时，按下此快捷键。"
           }
         }
       }
@@ -1256,6 +1322,17 @@
         }
       }
     },
+    "Remove": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除"
+          }
+        }
+      }
+    },
     "Remove Copy": {
       "extractionState": "manual",
       "localizations": {
@@ -1263,6 +1340,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "移除副本"
+          }
+        }
+      }
+    },
+    "Remove the copy from this Mac?": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除本机上的副本？"
           }
         }
       }
@@ -1333,6 +1421,39 @@
         }
       }
     },
+    "Search Again": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新搜索"
+          }
+        }
+      }
+    },
+    "Search for the Device Again": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新搜索设备"
+          }
+        }
+      }
+    },
+    "Search for the device again?": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新搜索设备？"
+          }
+        }
+      }
+    },
     "Searching for the device…": {
       "extractionState": "manual",
       "localizations": {
@@ -1399,6 +1520,28 @@
         }
       }
     },
+    "Shortcut not sent: allow Device Control and Data Access first.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "快捷键未发出：请先允许「设备控制和数据访问」。"
+          }
+        }
+      }
+    },
+    "Shortcut…": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "快捷键…"
+          }
+        }
+      }
+    },
     "Show On-Screen Notifications": {
       "extractionState": "manual",
       "localizations": {
@@ -1406,6 +1549,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "显示屏幕提示"
+          }
+        }
+      }
+    },
+    "Show Password": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示密码"
           }
         }
       }
@@ -1465,13 +1619,13 @@
         }
       }
     },
-    "System Settings → Privacy & Security → Device Control and Data Access. If the switch there is already on, remove TouchUnlock from the list and add it again.": {
+    "Stored on the device and typed after a fingerprint match. Saving also updates every enrolled fingerprint.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "系统设置 → 隐私与安全 → 设备控制和数据访问。如果那里的开关已经是打开的，请把列表里的触达移除后重新添加一次。"
+            "value": "密码保存在设备中，指纹匹配后由设备键入。保存时同步更新全部已录入指纹。"
           }
         }
       }
@@ -1483,6 +1637,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "测试"
+          }
+        }
+      }
+    },
+    "Test the reader": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "测试识别器"
           }
         }
       }
@@ -1520,13 +1685,13 @@
         }
       }
     },
-    "The app will search for a device again.": {
+    "The app restarts its search. Nothing on the device is erased.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "应用将重新搜索设备。"
+            "value": "应用将重新开始搜索。不会清除设备中的任何数据。"
           }
         }
       }
@@ -1564,6 +1729,17 @@
         }
       }
     },
+    "The device does not type a password while one of these apps is in front. The lock screen is not affected.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "这些应用位于前台时，设备不会输入密码。锁屏不受影响。"
+          }
+        }
+      }
+    },
     "The device is not connected.": {
       "extractionState": "manual",
       "localizations": {
@@ -1586,35 +1762,24 @@
         }
       }
     },
-    "The device stores the password and types it after a fingerprint match. Saving also updates every enrolled fingerprint.": {
+    "The device types the password only while this app is running.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "密码保存在设备中，指纹匹配后由设备键入。保存时会同步更新所有已录入指纹。"
+            "value": "仅在触达运行时，设备才会键入密码。"
           }
         }
       }
     },
-    "The device types the password only while TouchUnlock is running. Quit the app and touching the sensor does nothing, so keep the app running and turn on Open at Login in Settings. Fingerprint unlock at the lock screen keeps working as long as the app is running.": {
+    "The device types the password only while this app is running. Keep it running and turn on Open at Login.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "只有触达运行时，设备才会键入密码。退出应用后触碰传感器不会有任何反应，所以请让应用保持运行，并在“设置”里打开“登录时打开”。只要应用在运行，锁屏界面的指纹解锁照常可用。"
-          }
-        }
-      }
-    },
-    "The device types the password only while this app is running. When the app is not running, touching the sensor does nothing.": {
-      "extractionState": "manual",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "只有本应用运行时，设备才会键入密码。应用没有运行时，触碰传感器不会有任何反应。"
+            "value": "仅在触达运行时，设备才会键入密码。请保持其运行，并开启「登录时打开」。"
           }
         }
       }
@@ -1630,13 +1795,13 @@
         }
       }
     },
-    "The light starts blinking quickly, which means it is in pairing mode.": {
+    "The light blinks quickly to confirm pairing mode.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "指示灯开始快速闪烁，即表示已进入配对模式。"
+            "value": "指示灯快速闪烁即已进入配对模式。"
           }
         }
       }
@@ -1652,24 +1817,24 @@
         }
       }
     },
-    "The name is kept on this Mac only. The device stores fingerprints by number, so a name never travels with the reader.": {
+    "The name is kept on this Mac only. Fingerprints are stored by number on the device.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "名字只保存在这台 Mac 上。设备按编号存指纹，名字不会跟着识别器走。"
+            "value": "名字仅保存在本机。设备按编号存储指纹。"
           }
         }
       }
     },
-    "The password copy stays in the keychain of this Mac.": {
+    "The password copy stays in this Mac's keychain.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "密码副本只保存在本机钥匙串中。"
+            "value": "密码副本保存在本机钥匙串中。"
           }
         }
       }
@@ -1762,17 +1927,6 @@
         }
       }
     },
-    "TouchUnlock reads whether the frontmost window is asking for a password, so the reader types only when there is somewhere to type. Without this permission it can still notice secure password prompts, but not every password field. You will find the switch in System Settings → Privacy & Security → Device Control and Data Access.": {
-      "extractionState": "manual",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "触达会读取前台窗口是否在等密码，只有在有地方可以输入时识别器才会键入。没有这个权限时，它仍能识别安全密码输入提示，但覆盖不到所有密码框。开关在「系统设置 → 隐私与安全 → 设备控制和数据访问」里。"
-          }
-        }
-      }
-    },
     "Try Again": {
       "extractionState": "manual",
       "localizations": {
@@ -1795,6 +1949,17 @@
         }
       }
     },
+    "Types this password when a window is asking for one. The lock screen always uses the system password.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有窗口等待密码时输入此处设置的密码。锁屏一律使用系统密码。"
+          }
+        }
+      }
+    },
     "Unlock Password": {
       "extractionState": "manual",
       "localizations": {
@@ -1813,6 +1978,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "解锁密码"
+          }
+        }
+      }
+    },
+    "Unlock password not set": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尚未设置解锁密码"
+          }
+        }
+      }
+    },
+    "Unlock password set": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "解锁密码已设置"
           }
         }
       }
@@ -1850,13 +2037,13 @@
         }
       }
     },
-    "Used to link new fingerprints automatically and to confirm deleting one. It never leaves this Mac.": {
+    "Use this when the app cannot find the device, for example after pairing it again in Bluetooth settings. Nothing on the device is erased.": {
       "extractionState": "manual",
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "用于给新指纹自动关联密码，以及删除指纹前的确认。它不会离开这台 Mac。"
+            "value": "在应用找不到设备时使用，例如曾在系统蓝牙里重新配对过。不会清除设备中的任何数据。"
           }
         }
       }
@@ -1879,17 +2066,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "版本"
-          }
-        }
-      }
-    },
-    "When a window is asking for a password, this fingerprint types the password set here. At the lock screen the system password is always used.": {
-      "extractionState": "manual",
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "有窗口在等密码时，这根指纹会输入这里设置的密码。锁屏时一律使用系统密码。"
           }
         }
       }
