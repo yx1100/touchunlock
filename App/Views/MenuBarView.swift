@@ -6,9 +6,15 @@ struct MenuBarIcon: View {
     let model: AppModel
 
     var body: some View {
-        // 默认字号下 touchid 比其他菜单栏图标小一圈，放大一档与它们齐高。
-        Image(systemName: model.menuBarSymbol)
-            .imageScale(.large)
+        // 菜单栏会把 SwiftUI 的符号字号压回默认大小，所以直接生成指定磅值的模板图。
+        // touchid 自带留白，比其他图标显得小，磅值放大到与它们视觉齐高。
+        if let image = NSImage(systemSymbolName: model.menuBarSymbol, accessibilityDescription: nil)?
+            .withSymbolConfiguration(.init(pointSize: 16, weight: .regular)) {
+            let _ = image.isTemplate = true
+            Image(nsImage: image)
+        } else {
+            Image(systemName: model.menuBarSymbol)
+        }
     }
 }
 
