@@ -61,6 +61,18 @@ enum Page: String, CaseIterable, Identifiable {
     }
 }
 
+/// 不可见的工具栏占位项。macOS 26 上还要去掉它的玻璃底，否则右上角会露出一道细线。
+private struct TitlePlaceholder: ToolbarContent {
+    var body: some ToolbarContent {
+        if #available(macOS 26, *) {
+            ToolbarItem(placement: .primaryAction) { Color.clear.frame(width: 1, height: 1) }
+                .sharedBackgroundVisibility(.hidden)
+        } else {
+            ToolbarItem(placement: .primaryAction) { Color.clear.frame(width: 1, height: 1) }
+        }
+    }
+}
+
 struct RootView: View {
     let model: AppModel
     @State private var page: Page? = .overview
@@ -94,6 +106,8 @@ struct RootView: View {
                 }
             }
             .navigationTitle(current.title)
+            // 去掉边栏按钮后工具栏会变空，标题随之缩成小号窗口标题；放一个不可见的占位项保持原来的大标题。
+            .toolbar { TitlePlaceholder() }
         }
         .overlay(alignment: .bottom) {
             // 测试面板优先：它不自动消失，必须由用户点叉结束。
