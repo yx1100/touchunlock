@@ -6,7 +6,9 @@ struct MenuBarIcon: View {
     let model: AppModel
 
     var body: some View {
+        // 默认字号下 touchid 比其他菜单栏图标小一圈，放大一档与它们齐高。
         Image(systemName: model.menuBarSymbol)
+            .imageScale(.large)
     }
 }
 
