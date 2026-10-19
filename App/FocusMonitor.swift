@@ -88,7 +88,8 @@ final class FocusMonitor {
     ///   弹窗还报「密码已输入」。所以只在「前台不是 TouchUnlock 自己、也不是 Finder」时才认它：
     ///   终端里的 sudo 提示仍然是前台应用自己开的 Secure Event Input，照常能认出来。
     private static func passwordFieldIsTarget(secureInput: Bool, secureField: Bool, front: String?) -> Bool {
-        guard let front else { return secureField }
+        // 没有 bundle id 的前台进程（如 osascript 弹出的密码框）也认 Secure Event Input。
+        guard let front else { return secureField || secureInput }
         // 我们自己窗口里的安全输入框不需要设备代打。
         if front == Bundle.main.bundleIdentifier { return false }
         if secureField { return true }
