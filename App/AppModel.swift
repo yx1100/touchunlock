@@ -538,6 +538,34 @@ final class AppModel {
         UserDefaults.standard.set(fingerprintNames, forKey: "TouchUnlock.fingerprintNames")
     }
 
+    // MARK: 指纹触发的快捷键
+
+    /// 每枚指纹绑定的快捷键。同样只保存在这台 Mac 上。
+    private(set) var fingerprintShortcuts: [String: Shortcut] =
+        UserDefaults.standard.data(forKey: "TouchUnlock.fingerprintShortcuts")
+            .flatMap { try? JSONDecoder().decode([String: Shortcut].self, from: $0) } ?? [:]
+
+    func shortcut(for id: Int) -> Shortcut? { fingerprintShortcuts[String(id)] }
+
+    /// 绑定快捷键。传 nil 即清除。
+    func setShortcut(_ shortcut: Shortcut?, for id: Int) {
+        fingerprintShortcuts[String(id)] = shortcut
+        if let data = try? JSONEncoder().encode(fingerprintShortcuts) {
+            UserDefaults.standard.set(data, forKey: "TouchUnlock.fingerprintShortcuts")
+        }
+    }
+
+    /// 设备识别到指纹、但没有键入密码时上报编号；这里发出该指纹绑定的快捷键。
+    private func fireShortcut(for id: Int) {
+        guard let shortcut = shortcut(for: id) else { return }
+        guard hasAccessibilityPermission else {
+            post(.warning, String(localized: "Shortcut not sent: allow Device Control and Data Access first."))
+            return
+        }
+        log("shortcut for fingerprint \(id): \(shortcut.display)")
+        shortcut.post()
+    }
+
     /// 这枚指纹单独绑定的密码；nil 表示它跟随系统密码。
     func customPassword(for id: Int) -> String? {
         PasswordStore.load(account: PasswordStore.fingerprintAccount(id))
@@ -768,7 +796,7 @@ final class AppModel {
                 log("device reported typing while it was never armed; ignored")
             }
         // 托管模式下设备把密码交给应用（原厂固件的行为）。密码在解码时就已丢弃，这里什么都不做。
-        case .passwordHandedOver: break
+        case .passwordHandedOver(let id): fireShortcut(for: id)
 
         case .enrollStarted: break
         case .enrollProgress(let id, let step, let total): enroll = .progress(id: id, step: step, total: total)
@@ -796,7 +824,7 @@ final class AppModel {
         case .deleted(let id, let ok):
             if ok {
                 // 名字跟着指纹一起清掉，免得编号被复用后张冠李戴。
-                if let id { rename(id, to: "") }
+                if let id { rename(id, to: ""); setShortcut(nil, for: id) }
                 post(.success, String(localized: "Fingerprint deleted."))
             } else {
                 post(.error, String(localized: "Could not delete the fingerprint."))

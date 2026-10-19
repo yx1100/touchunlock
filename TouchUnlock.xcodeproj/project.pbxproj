@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		03F7EF1BE98750CF9CE0EF62 /* PasswordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07F5AF9A467C02C03179492 /* PasswordStore.swift */; };
+		0F2011809D20225DCE48348C /* Shortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDD90AD0C0357524BA3E63E /* Shortcut.swift */; };
 		1372181A80E2A90E1DD7C147 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 88606FD796C00456D49EC2AD /* Assets.xcassets */; };
 		1436FD3DFDC77C9FCEEEF030 /* LogPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09FA5D1478CED0844CA69D9 /* LogPage.swift */; };
 		17C34202527F98DE03CDB5DE /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 4E3B50E3AF82A02A5D89E7E9 /* Localizable.xcstrings */; };
@@ -33,6 +34,7 @@
 		339B344086C222526CD36BA7 /* FocusMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusMonitor.swift; sourceTree = "<group>"; };
 		4346A28A9ED69F55872D4BA4 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		4E3B50E3AF82A02A5D89E7E9 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		4EDD90AD0C0357524BA3E63E /* Shortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shortcut.swift; sourceTree = "<group>"; };
 		64F66EB0142592E41EE4F059 /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
 		761DC2932D73F9453FF560D0 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 		7B04E95E029C353FBA8B785A /* OverviewPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewPage.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				D05F6D6E0C17B044D5EA2CC3 /* KeyboardLink.swift */,
 				0C6C39700A8DCB687BDDD937 /* MacStateMonitor.swift */,
 				B07F5AF9A467C02C03179492 /* PasswordStore.swift */,
+				4EDD90AD0C0357524BA3E63E /* Shortcut.swift */,
 				99C96B6CB7C1B46F65C48F3A /* TouchUnlockApp.swift */,
 				D0A951B5FBE510325D840441 /* Resources */,
 				0DAB69B7B086FC9158EC7500 /* Views */,
@@ -221,6 +224,7 @@
 				03F7EF1BE98750CF9CE0EF62 /* PasswordStore.swift in Sources */,
 				DD046B9580BF127BD8F70B96 /* RootView.swift in Sources */,
 				377A1808C022F06D034E69B8 /* SettingsPage.swift in Sources */,
+				0F2011809D20225DCE48348C /* Shortcut.swift in Sources */,
 				DAF4069943BA41F272887E17 /* TouchUnlockApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
