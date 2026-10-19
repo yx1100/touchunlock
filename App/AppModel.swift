@@ -84,7 +84,7 @@ final class AppModel {
 
     @ObservationIgnored private let client = BLEClient()
     @ObservationIgnored private let monitor = MacStateMonitor()
-    /// 前台是否有窗口在等密码。只用于指示灯，不影响设备能否键入。
+    /// 前台是否有窗口在等密码。决定未锁屏时设备该不该键入。
     @ObservationIgnored private let focus = FocusMonitor()
     /// 屏幕顶部的提示面板。
     @ObservationIgnored let hud = HUD()
@@ -365,7 +365,7 @@ final class AppModel {
 
     private func macStateChanged(_ state: MacState) {
         macState = state
-        // 锁屏、屏保状态变化后重新上报；武装位不受影响。
+        // 锁屏、屏保状态变化后重新上报，并重算武装位。
         refreshArmedState()
         sendMacReport()
         // 锁屏期间设备必须输入系统密码（需求 3），解锁后恢复各自单独设置的密码。
@@ -373,8 +373,11 @@ final class AppModel {
 
     /// 武装位 = 设备现在该不该键入。
     ///
-    /// 只要应用在运行且已连上设备就恒为 true：软件运行时硬件才有用，与锁屏、
-    /// 前台窗口无关。应用退出或崩溃时由 `assistOff` / 心跳超时让设备停止键入。
+    /// - 锁屏或屏保：恒为 true。设备用系统密码解锁锁屏，
+    ///   这类场景 app 看不到也不需要看到前台窗口。
+    /// - 未锁屏：只看前台有没有正在等密码的输入框。没有就不武装，
+    ///   设备即使识别成功也不会往任何窗口里键入。
+    /// 应用没有运行时设备从不键入：退出发 `assistOff`，崩溃则心跳超时。
     private func refreshArmedState() {
         let armed = currentArmedState
         monitor.setAllowsTyping(armed)
@@ -382,7 +385,7 @@ final class AppModel {
         refreshIndicator()
     }
     private var currentArmedState: Bool {
-        true
+        monitor.state.isScreenLocked || monitor.state.isScreensaver || focus.passwordInputFocused
     }
 
     /// 让设备开始或停止键入。

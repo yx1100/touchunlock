@@ -13,7 +13,7 @@ final class MacStateMonitor {
     private var displaySleep = false
     private var systemSleep = false
     private var screensaver = false
-    /// 武装位：应用是否允许设备现在键入。应用连上设备期间恒为 true。
+    /// 武装位：应用是否允许设备现在键入。由 AppModel 按锁屏状态与前台焦点判定后写入。
     private var allowsTyping = false
     private var observers: [(NotificationCenter, NSObjectProtocol)] = []
     /// 复用同一个 LAContext。状态每次变化都会重算，而新建一个 LAContext 会白白加载
@@ -61,8 +61,7 @@ final class MacStateMonitor {
         s.isDisplaySleep = displaySleep
         s.isSystemSleep = systemSleep
         s.isScreensaver = screensaver
-        // 武装位：应用连上设备期间恒为 true。
-        s.allowsTyping = allowsTyping
+                s.allowsTyping = allowsTyping
         s.hasExternalScreen = Self.hasExternalDisplay()
         s.isTouchIDAvailability = biometrics.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
         guard s != state else { return }
