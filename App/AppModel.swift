@@ -795,8 +795,8 @@ final class AppModel {
             } else {
                 log("device reported typing while it was never armed; ignored")
             }
-        // 托管模式下设备把密码交给应用（原厂固件的行为）。密码在解码时就已丢弃，这里什么都不做。
-        case .passwordHandedOver(let id): fireShortcut(for: id)
+        // 托管模式下设备把密码交给应用（原厂固件的行为）。补丁固件不再发它，密码在解码时也已丢弃。
+        case .passwordHandedOver: break
 
         case .enrollStarted: break
         case .enrollProgress(let id, let step, let total): enroll = .progress(id: id, step: step, total: total)
@@ -804,11 +804,15 @@ final class AppModel {
         case .enrollFailed(_, let failure, let reason): enrollFailed(failure, reason: reason)
 
         case .identified(let id):
-            // 只有手动测试会发识别请求，所以这里的反馈只服务于测试面板。
             if fingerprintTest != nil {
+                // 手动测试主动发了识别请求，反馈只服务于测试面板。
                 fingerprintTest = .matched(id)
                 flashFingerprint(id)
                 scheduleTestAutoDismiss()
+            } else {
+                // 补丁固件在「不键入」时（前台没有密码框）主动发 fp=15，据此触发该指纹的快捷键。
+                flashFingerprint(id)
+                fireShortcut(for: id)
             }
         case .identifyFailed:
             if fingerprintTest != nil {
