@@ -29,6 +29,9 @@ final class FocusMonitor {
         }
     }
 
+    /// 位于前台时不响应的应用（bundle id）。
+    var ignoredBundleIDs: Set<String> = []
+
     var onChange: ((Bool) -> Void)?
     var onPermissionChange: ((Bool) -> Void)?
 
@@ -67,7 +70,7 @@ final class FocusMonitor {
         secureFieldFocused = Self.secureInputDecides(secureInput: secureInputActive, front: front)
             ? false
             : Self.focusedElementIsSecureField()
-        passwordInputFocused = Self.passwordFieldIsTarget(secureInput: secureInputActive,
+        passwordInputFocused = passwordFieldIsTarget(secureInput: secureInputActive,
                                                           secureField: secureFieldFocused,
                                                           front: front)
     }
@@ -87,9 +90,10 @@ final class FocusMonitor {
     ///   什么都没有时它也会为真，于是设备以为有人在等密码而照实输入（字符落进空气里），
     ///   弹窗还报「密码已输入」。所以只在「前台不是 TouchUnlock 自己、也不是 Finder」时才认它：
     ///   终端里的 sudo 提示仍然是前台应用自己开的 Secure Event Input，照常能认出来。
-    private static func passwordFieldIsTarget(secureInput: Bool, secureField: Bool, front: String?) -> Bool {
+    private func passwordFieldIsTarget(secureInput: Bool, secureField: Bool, front: String?) -> Bool {
         // 没有 bundle id 的前台进程（如 osascript 弹出的密码框）也认 Secure Event Input。
         guard let front else { return secureField || secureInput }
+        if ignoredBundleIDs.contains(front) { return false }
         // 我们自己窗口里的安全输入框不需要设备代打。
         if front == Bundle.main.bundleIdentifier { return false }
         if secureField { return true }

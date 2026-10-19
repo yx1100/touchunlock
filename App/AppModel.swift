@@ -82,6 +82,9 @@ final class AppModel {
     /// 是否在程序坞显示图标。默认显示；关闭后只留菜单栏图标。
     private(set) var showDockIcon = UserDefaults.standard.object(forKey: "TouchUnlock.showDockIcon") as? Bool ?? true
 
+    /// 位于前台时设备不键入的应用（bundle id）。
+    private(set) var ignoredApps = UserDefaults.standard.stringArray(forKey: "TouchUnlock.ignoredApps") ?? []
+
     @ObservationIgnored private let client = BLEClient()
     @ObservationIgnored private let monitor = MacStateMonitor()
     /// 前台是否有窗口在等密码。决定未锁屏时设备该不该键入。
@@ -189,6 +192,7 @@ final class AppModel {
             MainActor.assumeIsolated { self?.hasAccessibilityPermission = granted }
         }
 
+        focus.ignoredBundleIDs = Set(ignoredApps)
         applyDockPolicy()
         hud.isEnabled = showHUD
         monitor.start()
@@ -680,6 +684,21 @@ final class AppModel {
             post(.error, String(localized: "Could not change the login item: \(error.localizedDescription)"))
         }
         launchAtLogin = SMAppService.mainApp.status == .enabled
+    }
+
+    func addIgnoredApp(at url: URL) {
+        guard let id = Bundle(url: url)?.bundleIdentifier, !ignoredApps.contains(id) else { return }
+        setIgnoredApps(ignoredApps + [id])
+    }
+
+    func removeIgnoredApp(_ id: String) {
+        setIgnoredApps(ignoredApps.filter { $0 != id })
+    }
+
+    private func setIgnoredApps(_ ids: [String]) {
+        ignoredApps = ids
+        UserDefaults.standard.set(ids, forKey: "TouchUnlock.ignoredApps")
+        focus.ignoredBundleIDs = Set(ids)
     }
 
     func setShowDockIcon(_ on: Bool) {
