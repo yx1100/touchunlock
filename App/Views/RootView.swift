@@ -80,6 +80,7 @@ struct RootView: View {
                 }
             }
             .navigationSplitViewColumnWidth(min: 170, ideal: 190, max: 240)
+            .toolbar(removing: .sidebarToggle)
             .safeAreaInset(edge: .bottom, spacing: 0) { SidebarStatus(model: model) }
         } detail: {
             let current = page ?? .overview

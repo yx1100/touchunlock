@@ -38,5 +38,7 @@ struct TouchUnlockApp: App {
                 .frame(minWidth: 680, minHeight: 480)
         }
         .defaultSize(width: 780, height: 560)
+        // 边栏固定显示，去掉「显示/隐藏边栏」菜单项及其快捷键。
+        .commands { CommandGroup(replacing: .sidebar) {} }
     }
 }
