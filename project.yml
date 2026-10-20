@@ -21,8 +21,8 @@ targets:
       properties:
         CFBundleName: TouchUnlock
         CFBundleDisplayName: TouchUnlock
-        CFBundleShortVersionString: "1.2.2"
-        CFBundleVersion: "13"
+        CFBundleShortVersionString: "1.2.3"
+        CFBundleVersion: "14"
         LSMinimumSystemVersion: "14.0"
         LSApplicationCategoryType: public.app-category.utilities
         CFBundleDevelopmentRegion: en

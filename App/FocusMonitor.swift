@@ -70,9 +70,10 @@ final class FocusMonitor {
         secureFieldFocused = Self.secureInputDecides(secureInput: secureInputActive, front: front)
             ? false
             : Self.focusedElementIsSecureField()
-        passwordInputFocused = passwordFieldIsTarget(secureInput: secureInputActive,
-                                                          secureField: secureFieldFocused,
-                                                          front: front)
+        passwordInputFocused = Self.securityAgentWindowVisible
+            || passwordFieldIsTarget(secureInput: secureInputActive,
+                                     secureField: secureFieldFocused,
+                                     front: front)
     }
 
     /// Secure Event Input 是否足以单独定论：它只在「前台不是 TouchUnlock 自己、
@@ -102,6 +103,15 @@ final class FocusMonitor {
     }
 
     private static var secureEventInputActive: Bool { IsSecureEventInputEnabled() }
+
+    /// 系统的授权弹窗（系统设置里改隐私项、需要管理员密码等）由独立进程 SecurityAgent 显示：
+    /// 它不一定成为前台应用，辅助功能也看不到它的输入框，所以直接看屏幕上有没有它的窗口。
+    /// 读窗口所属进程名不需要「屏幕录制」授权。
+    private static var securityAgentWindowVisible: Bool {
+        let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)
+            as? [[String: Any]] ?? []
+        return windows.contains { ($0[kCGWindowOwnerName as String] as? String) == "SecurityAgent" }
+    }
 
     /// 轮询每 0.35 秒跑一次，AX 元素和属性名都缓存成常量：
     /// 原先每次都要新建一个 system-wide 元素、并把若干个 Swift 字符串桥接成 CFString。
