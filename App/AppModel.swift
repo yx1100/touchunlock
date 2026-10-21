@@ -381,6 +381,7 @@ final class AppModel {
     ///   这类场景 app 看不到也不需要看到前台窗口。
     /// - 未锁屏：只看前台有没有正在等密码的输入框。没有就不武装，
     ///   设备即使识别成功也不会往任何窗口里键入。
+    /// - 系统授权弹窗：同样不武装。设备的键盘按键到不了它，改由应用收到识别结果后代打。
     /// 应用没有运行时设备从不键入：退出发 `assistOff`，崩溃则心跳超时。
     private func refreshArmedState() {
         let armed = currentArmedState
@@ -389,7 +390,8 @@ final class AppModel {
         refreshIndicator()
     }
     private var currentArmedState: Bool {
-        monitor.state.isScreenLocked || monitor.state.isScreensaver || focus.passwordInputFocused
+        monitor.state.isScreenLocked || monitor.state.isScreensaver
+            || (focus.passwordInputFocused && !focus.authDialogVisible)
     }
 
     /// 让设备开始或停止键入。
@@ -553,6 +555,22 @@ final class AppModel {
         if let data = try? JSONEncoder().encode(fingerprintShortcuts) {
             UserDefaults.standard.set(data, forKey: "TouchUnlock.fingerprintShortcuts")
         }
+    }
+
+    /// 授权弹窗里由应用代打密码：该指纹单独设置的密码，没有就用系统密码。密码不进日志。
+    private func typeIntoAuthDialog(for id: Int) {
+        guard hasAccessibilityPermission else {
+            post(.warning, String(localized: "Shortcut not sent: allow Device Control and Data Access first."))
+            return
+        }
+        guard let password = customPassword(for: id) ?? PasswordStore.load(), !password.isEmpty else {
+            post(.warning, String(localized: "Set the unlock password first."))
+            return
+        }
+        log("typing the password for fingerprint \(id) into the authorization dialog")
+        KeyTyper.typeAndReturn(password)
+        if showHUD { hud.show(String(localized: "Fingerprint recognized. Password typed."), kind: .success) }
+        sendIndicator(colorType: Self.indicatorSuccess, count: 3)
     }
 
     /// 设备识别到指纹、但没有键入密码时上报编号；这里发出该指纹绑定的快捷键。
@@ -810,9 +828,9 @@ final class AppModel {
                 flashFingerprint(id)
                 scheduleTestAutoDismiss()
             } else {
-                // 补丁固件在「不键入」时（前台没有密码框）主动发 fp=15，据此触发该指纹的快捷键。
+                // 补丁固件在「不键入」时主动发 fp=15：授权弹窗在屏幕上就代打密码，否则触发该指纹的快捷键。
                 flashFingerprint(id)
-                fireShortcut(for: id)
+                if focus.authDialogVisible { typeIntoAuthDialog(for: id) } else { fireShortcut(for: id) }
             }
         case .identifyFailed:
             if fingerprintTest != nil {

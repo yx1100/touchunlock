@@ -46,3 +46,24 @@ struct Shortcut: Codable, Equatable {
         }
     }
 }
+
+/// 用系统按键事件把一段文字逐字打出来，再按回车。需要「辅助功能」授权。
+enum KeyTyper {
+    static func typeAndReturn(_ text: String) {
+        DispatchQueue.global(qos: .userInteractive).async {
+            for character in text {
+                let units = Array(String(character).utf16)
+                for down in [true, false] {
+                    guard let event = CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: down) else { continue }
+                    event.keyboardSetUnicodeString(stringLength: units.count, unicodeString: units)
+                    event.post(tap: .cghidEventTap)
+                }
+                usleep(12_000)
+            }
+            usleep(60_000)
+            for down in [true, false] {
+                CGEvent(keyboardEventSource: nil, virtualKey: 36, keyDown: down)?.post(tap: .cghidEventTap)
+            }
+        }
+    }
+}

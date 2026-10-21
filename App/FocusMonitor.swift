@@ -18,6 +18,12 @@ final class FocusMonitor {
         didSet { if passwordInputFocused != oldValue { onChange?(passwordInputFocused) } }
     }
 
+    /// 系统授权弹窗（SecurityAgent）正在屏幕上。设备的蓝牙键盘按键到不了这类弹窗，
+    /// 所以这时由应用自己代打密码（见 `AppModel.typeIntoAuthDialog`）。
+    private(set) var authDialogVisible = false {
+        didSet { if authDialogVisible != oldValue { onChange?(passwordInputFocused) } }
+    }
+
     /// 两个原始信号，分开留一份只为了日志和排查（判定逻辑见 `passwordFieldIsTarget`）。
     private(set) var secureInputActive = false
     private(set) var secureFieldFocused = false
@@ -70,7 +76,8 @@ final class FocusMonitor {
         secureFieldFocused = Self.secureInputDecides(secureInput: secureInputActive, front: front)
             ? false
             : Self.focusedElementIsSecureField()
-        passwordInputFocused = Self.securityAgentWindowVisible
+        authDialogVisible = Self.securityAgentWindowVisible
+        passwordInputFocused = authDialogVisible
             || passwordFieldIsTarget(secureInput: secureInputActive,
                                      secureField: secureFieldFocused,
                                      front: front)
