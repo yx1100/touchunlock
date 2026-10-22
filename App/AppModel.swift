@@ -89,7 +89,7 @@ final class AppModel {
     @ObservationIgnored private let monitor = MacStateMonitor()
     /// 前台是否有窗口在等密码。决定未锁屏时设备该不该键入。
     @ObservationIgnored private let focus = FocusMonitor()
-    /// 屏幕顶部的提示面板。
+    /// 屏幕正中央的提示面板。
     @ObservationIgnored let hud = HUD()
     /// 设置默认密码期间暂存，设备确认成功后才写入钥匙串，用完即清。
     @ObservationIgnored private var pendingPassword: String?
@@ -141,7 +141,7 @@ final class AppModel {
     /// 正在把新密码逐个写到已录入的指纹上。此时不能开始新的录入，否则两条
     /// 密码写入链同时在飞，设备的回包不带 id，结果会认错。
     var isRebinding: Bool { rebinding || rebindAfterInfoRefresh }
-    /// 是否显示屏幕顶部的提示面板。
+    /// 是否显示屏幕正中央的提示面板。
     var showHUD = UserDefaults.standard.object(forKey: "TouchUnlock.showHUD") as? Bool ?? true {
         didSet {
             UserDefaults.standard.set(showHUD, forKey: "TouchUnlock.showHUD")
