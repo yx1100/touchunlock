@@ -24,7 +24,7 @@ enum HUDKind {
     }
 }
 
-/// 屏幕顶部居中的小提示：macOS 26 起用 Liquid Glass，旧系统退回毛玻璃。
+/// 屏幕正中央的小提示：macOS 26 起用 Liquid Glass，旧系统退回毛玻璃。
 ///
 /// 不抢焦点、不拦鼠标、不参与窗口循环，1.8 秒后自动淡出。用于「按压识别器之后
 /// 立刻要知道结果」的反馈；需要用户处理的问题仍然用应用窗口里的 toast。
@@ -97,14 +97,14 @@ final class HUD {
         return hosting
     }
 
-    /// 放在鼠标所在那块屏幕的顶部居中；那块屏通常就是用户正在看的那块。
+    /// 放在鼠标所在那块屏幕的正中央；那块屏通常就是用户正在看的那块。
     private func position(_ panel: NSPanel) {
         let mouse = NSEvent.mouseLocation
         let screen = NSScreen.screens.first { $0.frame.contains(mouse) } ?? NSScreen.main
-        guard let visible = screen?.visibleFrame else { return }
+        guard let frame = screen?.frame else { return }
         let size = panel.frame.size
-        panel.setFrameOrigin(NSPoint(x: visible.midX - size.width / 2,
-                                     y: visible.maxY - size.height - 12))
+        panel.setFrameOrigin(NSPoint(x: frame.midX - size.width / 2,
+                                     y: frame.midY - size.height / 2))
     }
 }
 
