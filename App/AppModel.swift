@@ -1,6 +1,7 @@
 import AppKit
 import DurianCore
 import Observation
+import os
 import ServiceManagement
 
 enum EnrollState: Equatable {
@@ -1062,7 +1063,12 @@ final class AppModel {
     // MARK: 日志
 
     /// 只记状态和事件，不记密码：DeviceRequest / DeviceEvent 的描述已做脱敏。
+    /// 同一份日志也写进系统日志，应用窗口没开或应用已退出时也能用
+    /// `log stream --predicate 'subsystem == "local.touchunlock"'` 排查连接问题。
+    @ObservationIgnored private static let systemLog = Logger(subsystem: "local.touchunlock", category: "app")
+
     func log(_ line: String) {
+        Self.systemLog.notice("\(line, privacy: .public)")
         let stamp = Date.now.formatted(.dateTime.hour().minute().second())
         logLines.append("\(stamp)  \(line)")
         if logLines.count > 300 { logLines.removeFirst(logLines.count - 300) }

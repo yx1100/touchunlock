@@ -44,6 +44,9 @@ public final class BLEClient: NSObject {
     static let scanPause: TimeInterval = 3
     /// 写入确认的最长等待时间，超时按失败处理，免得调用方永远等下去。
     static let writeTimeout: TimeInterval = 1
+    /// 直连记住的设备最多等多久。CoreBluetooth 的 connect 永不超时，设备不接受连接时
+    /// 会一直停在「正在连接」，所以到点就取消，改为扫描。
+    static let connectTimeout: TimeInterval = 8
 
     public private(set) var state: BLEState = .idle {
         didSet { if state != oldValue { onStateChange?(state) } }
@@ -75,6 +78,9 @@ public final class BLEClient: NSObject {
     /// `retrieveConnectedPeripherals` 立刻找回来。扫描一轮仍没找到别的设备时清掉，
     /// 让只有这一块设备的用户还能连回去。
     private var forgottenID: UUID?
+    private var connectTimeoutWork: DispatchWorkItem?
+    /// 直连超时过一次后，下一轮先扫描而不是再直连同一台。
+    private var preferScan = false
 
     public override init() { super.init() }
 
@@ -162,6 +168,12 @@ public final class BLEClient: NSObject {
 
     private func connectOrScan() {
         guard wantsConnection, let central, central.state == .poweredOn, peripheral == nil else { return }
+        if preferScan {
+            preferScan = false
+            onLog?("scanning instead of reconnecting directly")
+            startScan()
+            return
+        }
 
         if let p = central.retrieveConnectedPeripherals(withServices: [Self.serviceUUID])
             .first(where: { $0.identifier != forgottenID }) {
@@ -212,6 +224,18 @@ public final class BLEClient: NSObject {
         deviceName = p.name
         state = .connecting
         central?.connect(p, options: nil)
+        connectTimeoutWork?.cancel()
+        let work = DispatchWorkItem { [weak self, weak p] in
+            guard let self, let p, p === self.peripheral, self.state == .connecting else { return }
+            self.onLog?("connect timed out after \(Int(Self.connectTimeout))s, cancelling")
+            self.central?.cancelPeripheralConnection(p)
+            self.peripheral = nil; self.rx = nil; self.tx = nil
+            self.state = .idle
+            self.preferScan = true
+            self.reconnectLater(after: 1)
+        }
+        connectTimeoutWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.connectTimeout, execute: work)
     }
 
     private func resetReassembler() {
@@ -316,6 +340,7 @@ extension BLEClient: CBPeripheralDelegate {
         resetReassembler()
         writeLimit = p.maximumWriteValueLength(for: .withResponse)
         warnedAboutWriteLimit = false
+        connectTimeoutWork?.cancel()
         onLog?("ready (write limit \(writeLimit))")
         state = .ready
     }
