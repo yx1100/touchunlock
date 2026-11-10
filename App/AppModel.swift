@@ -113,6 +113,12 @@ final class AppModel {
     /// 最近一次武装的时刻。设备键入要花几百毫秒，期间焦点可能已经变了，
     /// 所以判断「这次键入是不是我们让它做的」不能只看当下的 deviceArmed。
     @ObservationIgnored private var lastArmedAt: Date?
+    /// 本轮武装期间连续失败的心跳条数。成功一次就清零。
+    @ObservationIgnored private var heartbeatFailures = 0
+    /// 本轮武装期间是否已经提示过「设备没有响应」。每轮只提示一次，免得刷屏。
+    @ObservationIgnored private var warnedDeviceUnresponsive = false
+    /// 上一次看到的授权弹窗状态，只用来在它出现、消失时记一行日志。
+    @ObservationIgnored private var lastAuthDialogVisible = false
     /// 指示灯是否正在慢闪。
     @ObservationIgnored private var indicatorPulsing = false
     @ObservationIgnored private var indicatorTimer: Timer?
@@ -269,7 +275,7 @@ final class AppModel {
         stopIndicator()
         sendIndicator(colorType: Self.indicatorOff, count: 1)   // 退出前把灯熄掉
         do {
-            try client.send(.assistOff, completion: completion)
+            try client.send(.assistOff) { _ in completion?() }
             return true
         } catch {
             log("send failed: \(error)")
@@ -331,8 +337,30 @@ final class AppModel {
     /// 心跳（`quiet`）不进日志：0.7 秒一条会把日志里的有用信息冲掉。
     private func sendMacReport(quiet: Bool = false) {
         guard isReady else { return }
-        send(.reportMacState(macState), quiet: quiet)
+        send(.reportMacState(macState), quiet: quiet) { [weak self] result in
+            self?.heartbeatResult(result)
+        }
     }
+
+    /// 武装期间心跳连续失败，说明设备收不到消息（忙不过来或已经卡住）：
+    /// 固件 2 秒收不到心跳就不键入，按指纹不会有反应，所以要让用户知道。
+    private func heartbeatResult(_ result: WriteResult) {
+        guard deviceArmed else { return }
+        switch result {
+        case .delivered:
+            heartbeatFailures = 0
+        case .failed, .timedOut:
+            heartbeatFailures += 1
+            if heartbeatFailures == Self.heartbeatFailureLimit {
+                warnDeviceUnresponsive("\(heartbeatFailures) heartbeats in a row were not delivered")
+            }
+        case .linkLost:
+            break   // 断线由连接状态处理，重连后会重新下发武装状态
+        }
+    }
+
+    /// 连续几条心跳失败才提示。心跳 0.7 秒一条，3 条约 2 秒，正好是固件停止键入的时长。
+    private static let heartbeatFailureLimit = 3
 
     private func startHeartbeat() {
         heartbeat?.invalidate()
@@ -363,13 +391,14 @@ final class AppModel {
         startHeartbeat()
     }
 
-    private func send(_ request: DeviceRequest, quiet: Bool = false, completion: (() -> Void)? = nil) {
+    private func send(_ request: DeviceRequest, quiet: Bool = false,
+                      completion: ((WriteResult) -> Void)? = nil) {
         do {
             try client.send(request, quiet: quiet, completion: completion)
         } catch {
             log("send failed: \(error)")
             if !quiet { post(.warning, String(localized: "The device is not connected.")) }
-            completion?()
+            completion?(.linkLost)
         }
     }
 
@@ -389,9 +418,14 @@ final class AppModel {
     ///   这类场景 app 看不到也不需要看到前台窗口。
     /// - 未锁屏：只看前台有没有正在等密码的输入框。没有就不武装，
     ///   设备即使识别成功也不会往任何窗口里键入。
-    /// - 系统授权弹窗：同样不武装。设备的键盘按键到不了它，改由应用收到识别结果后代打。
+    /// - 系统授权弹窗：同样不武装。这类弹窗收不住设备一口气发完的整串按键，
+    ///   改由应用收到识别结果后逐字代打。
     /// 应用没有运行时设备从不键入：退出发 `assistOff`，崩溃则心跳超时。
     private func refreshArmedState() {
+        if focus.authDialogVisible != lastAuthDialogVisible {
+            lastAuthDialogVisible = focus.authDialogVisible
+            log("authorization dialog \(lastAuthDialogVisible ? "shown: the app types the password itself" : "closed")")
+        }
         let armed = currentArmedState
         monitor.setAllowsTyping(armed)
         setDeviceArmed(armed)
@@ -415,11 +449,55 @@ final class AppModel {
         log("device \(armed ? "armed: it may type" : "disarmed: it stays silent")"
             + " [locked: \(monitor.state.isScreenLocked), screensaver: \(monitor.state.isScreensaver),"
             + " secureInput: \(focus.secureInputActive), secureField: \(focus.secureFieldFocused)]")
-        send(armed ? .assistOn : .assistPause, quiet: true)
+        heartbeatFailures = 0
+        if armed { warnedDeviceUnresponsive = false }
+        sendArmCommand(armed)
         // 心跳只为了让固件知道「应用还在」；不武装时没有需要键入的东西，
         // 停掉它可以把每秒两条的蓝牙流量降到零。武装瞬间的 ble=1 与状态上报
         // 本身就会刷新固件的时间戳，所以不必提前预热。
         if armed { startHeartbeat() } else { stopHeartbeat() }
+    }
+
+    /// 下发 ble=1 / ble=2。写入失败或超时就重试：两条指令都可以重复执行，
+    /// 而丢一条会让应用和设备的状态对不上（应用以为已经武装，设备却不会键入）。
+    /// 重试前先看状态有没有变：变了就由新的那条指令负责，旧的不再补发；
+    /// 断线不重试，重连后会整体重新下发。
+    private func sendArmCommand(_ armed: Bool, attempt: Int = 1) {
+        send(armed ? .assistOn : .assistPause, quiet: true) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .delivered, .linkLost:
+                return
+            case .failed, .timedOut:
+                guard self.isReady, self.deviceArmed == armed else { return }
+                if attempt < Self.armCommandAttempts {
+                    self.log("\(armed ? "arm" : "disarm") command not delivered (\(result)), retrying")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + Self.armCommandRetryDelay) { [weak self] in
+                        guard let self, self.isReady, self.deviceArmed == armed else { return }
+                        self.sendArmCommand(armed, attempt: attempt + 1)
+                    }
+                } else if armed {
+                    self.warnDeviceUnresponsive("arm command not delivered after \(attempt) attempts (\(result))")
+                } else {
+                    // 停止指令没送到也不会误键入：心跳已经停了，固件 2 秒后自己停止键入。
+                    self.log("disarm command not delivered after \(attempt) attempts (\(result)); the heartbeat timeout covers it")
+                }
+            }
+        }
+    }
+
+    private static let armCommandAttempts = 3
+    private static let armCommandRetryDelay: TimeInterval = 0.3
+
+    /// 设备收不到武装指令或心跳：这时按指纹不会输入密码。每轮武装只提示一次。
+    private func warnDeviceUnresponsive(_ reason: String) {
+        log("device not responding: \(reason)")
+        guard !warnedDeviceUnresponsive else { return }
+        warnedDeviceUnresponsive = true
+        let text = String(localized: "The device is not responding. Touching the sensor may not type the password. If this keeps happening, unplug the device and plug it back in.")
+        post(.warning, text)
+        // 屏幕中央的提示只停留不到 2 秒，放短句；完整说明留在应用窗口的提示里。
+        if showHUD { hud.show(String(localized: "The device is not responding."), kind: .warning) }
     }
 
     /// 指示灯：未锁屏、且前台有窗口在等密码时闪，表示「现在按指纹就会输入」。
@@ -575,7 +653,7 @@ final class AppModel {
         }
         // 按键事件发往当前键盘焦点，不一定是弹窗。用户若已点回别的应用的输入框，
         // 照打会把明文密码连同回车送进那个窗口（例如聊天框直接发出去）。
-        guard !FocusMonitor.textInputFocusedOutsideSecurityAgent() else {
+        guard !FocusMonitor.textInputFocusedOutsideAuthDialog() else {
             log("authorization dialog is not focused; password not typed")
             post(.warning, String(localized: "Password not typed: click the password field in the dialog first."))
             if showHUD {

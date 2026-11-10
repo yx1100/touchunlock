@@ -14,18 +14,32 @@ public enum BLEError: Error, Equatable {
     case payloadTooLarge(Int)
 }
 
+/// 一次写入的结果。
+public enum WriteResult: Equatable {
+    /// 设备确认收到。
+    case delivered
+    /// 设备或系统明确报错（例如设备忙不过来时的「Resources are insufficient」）。
+    case failed(String)
+    /// 超时还没有回报。写入可能稍后才落地，也可能丢了。
+    case timedOut
+    /// 链路断开，写入没有结果。
+    case linkLost
+
+    public var isDelivered: Bool { self == .delivered }
+}
+
 /// 一次写入的完成凭据。`didWriteValueFor` 与超时先到者触发，只触发一次。
 /// CoreBluetooth 按顺序回报写入结果，所以队列可以按先进先出配对。
 private final class WriteTicket {
     private var fired = false
-    private let action: () -> Void
+    private let action: (WriteResult) -> Void
 
-    init(_ action: @escaping () -> Void) { self.action = action }
+    init(_ action: @escaping (WriteResult) -> Void) { self.action = action }
 
-    func fire() {
+    func fire(_ result: WriteResult) {
         guard !fired else { return }
         fired = true
-        action()
+        action(result)
     }
 }
 
@@ -117,20 +131,20 @@ public final class BLEClient: NSObject {
     }
 
     /// `quiet` 用于心跳这类高频报文：不写日志，免得把日志冲掉。
-    /// `completion` 在写入被设备确认、链路断开或超时后回调一次，用来在断开前等写入落地。
+    /// `completion` 在写入被设备确认、报错、链路断开或超时后回调一次，带上结果。
     public func send(_ request: DeviceRequest, quiet: Bool = false,
-                     completion: (() -> Void)? = nil) throws {
+                     completion: ((WriteResult) -> Void)? = nil) throws {
         if !quiet { onLog?("send \(request)") }
         try write(try request.packet(), completion: completion)
     }
 
     /// 发送任意报文。探测工具用它试未确认的取值。日志只记类型字段，不记 message。
-    public func send(packet: PacketData, completion: (() -> Void)? = nil) throws {
+    public func send(packet: PacketData, completion: ((WriteResult) -> Void)? = nil) throws {
         onLog?("send raw messageType=\(packet.messageType) ble=\(packet.bleMessageType) pw=\(packet.pwMessageType) fp=\(packet.fpMessageType) debug=\(packet.debugMessageType) messageBytes=\(packet.message.utf8.count)")
         try write(packet, completion: completion)
     }
 
-    private func write(_ packet: PacketData, completion: (() -> Void)? = nil) throws {
+    private func write(_ packet: PacketData, completion: ((WriteResult) -> Void)? = nil) throws {
         guard state == .ready, let p = peripheral, let rx else { throw BLEError.notReady }
         let data = try packet.encoded()
         guard data.count <= Self.maxWrite else { throw BLEError.payloadTooLarge(data.count) }
@@ -142,9 +156,9 @@ public final class BLEClient: NSObject {
         // 每条写入都挂一张凭据：即使调用方不关心结果，也要占住队列位次，
         // 否则后面写入的凭据会被这条写入的结果提前认领。超时只触发凭据、不出队，
         // 位次一直留到这条写入真正回报（或链路断开）为止。
-        let ticket = WriteTicket(completion ?? {})
+        let ticket = WriteTicket(completion ?? { _ in })
         writeTickets.append(ticket)
-        if writeTickets.count > 16 { writeTickets.removeFirst().fire() }
+        if writeTickets.count > 16 { writeTickets.removeFirst().fire(.timedOut) }
         DispatchQueue.main.asyncAfter(deadline: .now() + Self.writeTimeout) { [weak self] in
             self?.expire(ticket)
         }
@@ -154,14 +168,14 @@ public final class BLEClient: NSObject {
     /// 超时只让调用方继续，凭据留在队列里：这条写入的 `didWriteValueFor` 迟早还会到，
     /// 若先摘掉，迟到的回报就会认领下一条写入的凭据，让它的 completion 提前触发。
     private func expire(_ ticket: WriteTicket) {
-        ticket.fire()
+        ticket.fire(.timedOut)
     }
 
     /// 链路没了：所有等待中的调用方立即继续，不阻塞退出流程。
     private func finishPendingWrites() {
         let pending = writeTickets
         writeTickets.removeAll()
-        pending.forEach { $0.fire() }
+        pending.forEach { $0.fire(.linkLost) }
     }
 
     // MARK: 连接流程
@@ -359,6 +373,8 @@ extension BLEClient: CBPeripheralDelegate {
     public func peripheral(_ p: CBPeripheral, didWriteValueFor c: CBCharacteristic, error: Error?) {
         if let error { onLog?("write failed: \(error.localizedDescription)") }
         // 写入结果按顺序回报，队首就是这次写入的凭据。
-        if !writeTickets.isEmpty { writeTickets.removeFirst().fire() }
+        if !writeTickets.isEmpty {
+            writeTickets.removeFirst().fire(error.map { .failed($0.localizedDescription) } ?? .delivered)
+        }
     }
 }

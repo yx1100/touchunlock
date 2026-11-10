@@ -96,6 +96,8 @@ ZH = {
     "Delete": "删除",
     "Shortcut…": "快捷键…",
     "No shortcut": "未绑定快捷键",
+    "The device is not responding.": "设备没有响应。",
+    "The device is not responding. Touching the sensor may not type the password. If this keeps happening, unplug the device and plug it back in.": "设备没有响应，按指纹可能不会输入密码。如果反复出现，请拔下设备再插上。",
     "Shortcut: %@": "快捷键：%@",
     "Click to Record": "点击录制",
     "Press a shortcut…": "请按下快捷键…",

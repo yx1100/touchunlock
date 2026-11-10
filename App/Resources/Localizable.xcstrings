@@ -1795,6 +1795,28 @@
         }
       }
     },
+    "The device is not responding.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备没有响应。"
+          }
+        }
+      }
+    },
+    "The device is not responding. Touching the sensor may not type the password. If this keeps happening, unplug the device and plug it back in.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备没有响应，按指纹可能不会输入密码。如果反复出现，请拔下设备再插上。"
+          }
+        }
+      }
+    },
     "The device rejected the password.": {
       "extractionState": "manual",
       "localizations": {
