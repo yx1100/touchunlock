@@ -18,8 +18,8 @@ final class FocusMonitor {
         didSet { if passwordInputFocused != oldValue { onChange?(passwordInputFocused) } }
     }
 
-    /// 系统授权弹窗（SecurityAgent）正在屏幕上。设备的蓝牙键盘按键到不了这类弹窗，
-    /// 所以这时由应用自己代打密码（见 `AppModel.typeIntoAuthDialog`）。
+    /// 系统授权弹窗正在屏幕上（见 `authDialogBundleIDs`）。这类弹窗收不住设备一口气
+    /// 发完的整串按键，所以这时由应用自己逐字代打密码（见 `AppModel.typeIntoAuthDialog`）。
     private(set) var authDialogVisible = false {
         didSet { if authDialogVisible != oldValue { onChange?(passwordInputFocused) } }
     }
@@ -76,7 +76,7 @@ final class FocusMonitor {
         secureFieldFocused = Self.secureInputDecides(secureInput: secureInputActive, front: front)
             ? false
             : Self.focusedElementIsSecureField()
-        authDialogVisible = Self.securityAgentWindowVisible
+        authDialogVisible = Self.authDialogWindowVisible
         passwordInputFocused = authDialogVisible
             || passwordFieldIsTarget(secureInput: secureInputActive,
                                      secureField: secureFieldFocused,
@@ -111,13 +111,36 @@ final class FocusMonitor {
 
     private static var secureEventInputActive: Bool { IsSecureEventInputEnabled() }
 
-    /// 系统的授权弹窗（系统设置里改隐私项、需要管理员密码等）由独立进程 SecurityAgent 显示：
-    /// 它不一定成为前台应用，辅助功能也看不到它的输入框，所以直接看屏幕上有没有它的窗口。
-    /// 读窗口所属进程名不需要「屏幕录制」授权。
-    private static var securityAgentWindowVisible: Bool {
+    /// 显示系统授权弹窗的进程：
+    /// - SecurityAgent：需要管理员密码的授权（安装软件、改系统级设置等）；
+    /// - LocalAuthenticationRemoteService：本地认证弹窗，系统设置里改隐私与安全项、
+    ///   通行密钥要电脑密码时都走它（实测系统设置的密码弹窗就是它）。
+    static let authDialogBundleIDs: Set<String> = [
+        "com.apple.SecurityAgent",
+        "com.apple.LocalAuthenticationRemoteService",
+    ]
+    private static let authDialogOwnerNames: Set<String> = [
+        "SecurityAgent",
+        "LocalAuthenticationRemoteService",
+    ]
+
+    /// 屏幕上有没有授权弹窗的窗口。这类弹窗不一定成为前台应用，SecurityAgent 的输入框
+    /// 辅助功能也看不到，所以直接看窗口归属。读窗口所属进程不需要「屏幕录制」授权。
+    /// 进程名可能被本地化，所以同时按进程号对照 bundle id；透明窗口不算。
+    private static var authDialogWindowVisible: Bool {
         let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)
             as? [[String: Any]] ?? []
-        return windows.contains { ($0[kCGWindowOwnerName as String] as? String) == "SecurityAgent" }
+        let dialogPIDs = Set(authDialogBundleIDs.flatMap {
+            NSRunningApplication.runningApplications(withBundleIdentifier: $0).map(\.processIdentifier)
+        })
+        return windows.contains { window in
+            if let alpha = window[kCGWindowAlpha as String] as? Double, alpha <= 0 { return false }
+            if let name = window[kCGWindowOwnerName as String] as? String, authDialogOwnerNames.contains(name) {
+                return true
+            }
+            guard let pid = window[kCGWindowOwnerPID as String] as? pid_t else { return false }
+            return dialogPIDs.contains(pid)
+        }
     }
 
     /// 轮询每 0.35 秒跑一次，AX 元素和属性名都缓存成常量：
@@ -144,12 +167,12 @@ final class FocusMonitor {
         kAXTextFieldRole, kAXTextAreaRole, kAXComboBoxRole, kAXSecureTextFieldSubrole,
     ]
 
-    /// 键盘焦点是否落在**别的应用**的文字输入框里。
+    /// 键盘焦点是否落在授权弹窗**以外**的文字输入框里。
     ///
     /// 授权弹窗代打密码前用它把关：SecurityAgent 的输入框对辅助功能不可见，
     /// 所以没法正面确认「焦点在弹窗里」，只能反过来排除「焦点在别处的输入框里」。
-    /// 查不到焦点元素（多半正是焦点在弹窗里）时返回 false。
-    static func textInputFocusedOutsideSecurityAgent() -> Bool {
+    /// 查不到焦点元素（多半正是焦点在 SecurityAgent 弹窗里）时返回 false。
+    static func textInputFocusedOutsideAuthDialog() -> Bool {
         guard AXIsProcessTrusted() else { return false }
         var focused: CFTypeRef?
         guard AXUIElementCopyAttributeValue(systemWide, focusedElementAttribute, &focused) == .success,
@@ -157,7 +180,8 @@ final class FocusMonitor {
         let ax = element as! AXUIElement
         var pid: pid_t = 0
         if AXUIElementGetPid(ax, &pid) == .success,
-           NSRunningApplication(processIdentifier: pid)?.bundleIdentifier == "com.apple.SecurityAgent" {
+           let owner = NSRunningApplication(processIdentifier: pid)?.bundleIdentifier,
+           authDialogBundleIDs.contains(owner) {
             return false
         }
         let role = copyString(ax, roleAttribute) ?? ""
