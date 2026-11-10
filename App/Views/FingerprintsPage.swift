@@ -51,7 +51,7 @@ struct FingerprintsPage: View {
                             name: model.displayName(for: id),
                             canEdit: model.isReady,
                             hasCustomPassword: model.hasCustomPassword(id),
-                            shortcut: model.shortcut(for: id)?.display,
+                            shortcut: model.shortcut(for: id),
                             flashing: model.flashingFingerprint == id,
                             editPassword: { editing = .password(id) },
                             editShortcut: { editing = .shortcut(id) },
@@ -143,8 +143,8 @@ private struct FingerprintRow: View {
     let name: String
     let canEdit: Bool
     let hasCustomPassword: Bool
-    /// 已绑定快捷键的显示文本；nil 表示没有。
-    let shortcut: String?
+    /// 已绑定的快捷键；nil 表示没有。
+    let shortcut: Shortcut?
     /// 刚被识别到，行背景闪几下。
     let flashing: Bool
     let editPassword: () -> Void
@@ -168,16 +168,18 @@ private struct FingerprintRow: View {
                     .help("Rename")
                     .disabled(!canEdit)
                 }
-                Text(hasCustomPassword ? "Has its own password" : "Uses the system password")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 6) {
+                    Text(hasCustomPassword ? "Has its own password" : "Uses the system password")
+                    Text(verbatim: "·")
+                    shortcutStatus
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
             Spacer()
             Button("Password…", action: editPassword)
                 .disabled(!canEdit)
-            Button(action: editShortcut) {
-                if let shortcut { Text(verbatim: shortcut) } else { Text("Shortcut…") }
-            }
+            Button("Shortcut…", action: editShortcut)
             Button(role: .destructive, action: delete) {
                 Image(systemName: "trash")
             }
@@ -201,6 +203,47 @@ private struct FingerprintRow: View {
                 }
             } else {
                 withAnimation(.easeOut(duration: 0.18)) { pulse = false }
+            }
+        }
+    }
+
+    /// 快捷键状态：绑定了就画成一排键帽，没绑定用更淡的文字，扫一眼就能分出来。
+    @ViewBuilder private var shortcutStatus: some View {
+        if let shortcut {
+            HStack(spacing: 3) {
+                Image(systemName: "keyboard")
+                KeyCaps(keys: shortcut.keys)
+            }
+            .help("Shortcut: \(shortcut.display)")
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Shortcut: \(shortcut.display)")
+        } else {
+            Text("No shortcut")
+                .foregroundStyle(.tertiary)
+        }
+    }
+}
+
+/// 一排小键帽，用来显示快捷键，例如 ⌃ ⌥ K。
+private struct KeyCaps: View {
+    let keys: [String]
+
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(Array(keys.enumerated()), id: \.offset) { _, key in
+                Text(verbatim: key)
+                    .font(.caption.weight(.medium).monospaced())
+                    .foregroundStyle(.primary)
+                    .padding(.horizontal, 4)
+                    .frame(minWidth: 16, minHeight: 16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            .fill(Color.primary.opacity(0.07))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            .strokeBorder(Color.primary.opacity(0.18), lineWidth: 0.5)
+                    )
             }
         }
     }

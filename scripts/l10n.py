@@ -95,6 +95,8 @@ ZH = {
     "Could not read the fingerprint list.": "无法读取指纹列表。",
     "Delete": "删除",
     "Shortcut…": "快捷键…",
+    "No shortcut": "未绑定快捷键",
+    "Shortcut: %@": "快捷键：%@",
     "Click to Record": "点击录制",
     "Press a shortcut…": "请按下快捷键…",
     "Clear": "清除",

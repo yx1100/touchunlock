@@ -970,6 +970,17 @@
         }
       }
     },
+    "No shortcut": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未绑定快捷键"
+          }
+        }
+      }
+    },
     "None": {
       "extractionState": "manual",
       "localizations": {
@@ -1549,6 +1560,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "快捷键未发出：请先允许「设备控制和数据访问」。"
+          }
+        }
+      }
+    },
+    "Shortcut: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "快捷键：%@"
           }
         }
       }

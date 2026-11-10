@@ -26,14 +26,16 @@ struct Shortcut: Codable, Equatable {
             ?? event.charactersIgnoringModifiers?.uppercased() ?? "?"
     }
 
-    var display: String {
+    /// 按键逐个拆开：修饰键按系统顺序 ⌃⌥⇧⌘ 在前，主键在最后。界面里画成一排键帽。
+    var keys: [String] {
         let flags = NSEvent.ModifierFlags(rawValue: modifiers)
-        return (flags.contains(.control) ? "⌃" : "")
-            + (flags.contains(.option) ? "⌥" : "")
-            + (flags.contains(.shift) ? "⇧" : "")
-            + (flags.contains(.command) ? "⌘" : "")
-            + label
+        let symbols: [(NSEvent.ModifierFlags, String)] = [
+            (.control, "⌃"), (.option, "⌥"), (.shift, "⇧"), (.command, "⌘"),
+        ]
+        return symbols.filter { flags.contains($0.0) }.map(\.1) + [label]
     }
+
+    var display: String { keys.joined() }
 
     /// 向系统发出这组按键。需要「辅助功能」授权，否则事件会被丢弃。
     func post() {
