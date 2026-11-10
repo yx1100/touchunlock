@@ -145,6 +145,14 @@ hidutil list | awk 'NR==1 || /Durian/'
 
 没有输出时：在「系统设置 → 蓝牙」忘记设备后重新配对。本应用读 IORegistry（`IOHIDDevice`，`Product=Durian Touch` 且 `Transport=Bluetooth Low Energy`）检测这一状态，缺失时在界面里提示。
 
+### 断线后连不回来：配对地址与连接白名单
+
+固件把 `ble=3` 配对时的对端地址存在 NVS（命名空间 `esp32_prefs`，键 `pj_paired_addr` / `pj_paired_type`），启动时把它加进 NimBLE 白名单，并把广播的过滤策略设为「只接受白名单里的主机连接」（`setScanFilter(false, true)`，`filter_policy = 2`）。
+
+上电后的第一轮广播不带过滤，所以任何主机都能连上；链路一旦断开（Mac 重启、蓝牙重置、超出范围），设备重新广播时过滤生效。若存的地址不是当前这台 Mac 的蓝牙身份地址，Mac 的每次连接请求都会被设备忽略：系统日志里是反复的 `BLE Disconnected ... reason 762`（连接未能建立），设备仍在广播、扫描得到，但只有断电重启才能再连上。
+
+处理办法：长按按钮 3 秒进入配对模式，连上后在应用里点「配对」，让设备记住这台 Mac。配对后 `pj_paired_addr` 应为 Mac 的蓝牙地址（`system_profiler SPBluetoothDataType` 里控制器的 Address）。
+
 ## 6. 本应用如何使用这套协议
 
 - **武装/解除**：连上后发 `ble=1`，同时用 `pw=10` 上报 Mac 状态；不需要设备键入时发 `ble=2`。设备的键入判定同时看这个标志与「最近是否收到消息」，所以应用还会定期发 `pw=10` 作为心跳，超时约 2 秒即停止键入——应用崩溃或被强杀后设备不会继续键入。
