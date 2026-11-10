@@ -71,6 +71,10 @@ public final class BLEClient: NSObject {
     private var writeLimit = BLEClient.maxWrite
     private var warnedAboutWriteLimit = false
     private var scanTimeout: DispatchWorkItem?
+    /// 刚被「忘记」的设备。它作为蓝牙键盘仍连在系统上，不跳过的话会被
+    /// `retrieveConnectedPeripherals` 立刻找回来。扫描一轮仍没找到别的设备时清掉，
+    /// 让只有这一块设备的用户还能连回去。
+    private var forgottenID: UUID?
 
     public override init() { super.init() }
 
@@ -98,6 +102,8 @@ public final class BLEClient: NSObject {
 
     /// 忘记记住的设备并重新扫描（换了一块设备时用）。
     public func forgetDevice() {
+        forgottenID = peripheral?.identifier
+            ?? UserDefaults.standard.string(forKey: Self.savedIDKey).flatMap(UUID.init(uuidString:))
         UserDefaults.standard.removeObject(forKey: Self.savedIDKey)
         let wasRunning = wantsConnection
         stop()
@@ -128,7 +134,8 @@ public final class BLEClient: NSObject {
             onLog?("packet \(data.count) bytes exceeds the negotiated write length \(writeLimit), relying on a long write")
         }
         // 每条写入都挂一张凭据：即使调用方不关心结果，也要占住队列位次，
-        // 否则后面写入的凭据会被这条写入的结果提前认领。
+        // 否则后面写入的凭据会被这条写入的结果提前认领。超时只触发凭据、不出队，
+        // 位次一直留到这条写入真正回报（或链路断开）为止。
         let ticket = WriteTicket(completion ?? {})
         writeTickets.append(ticket)
         if writeTickets.count > 16 { writeTickets.removeFirst().fire() }
@@ -138,11 +145,9 @@ public final class BLEClient: NSObject {
         p.writeValue(data, for: rx, type: .withResponse)
     }
 
-    /// 超时的凭据要从队列里摘掉，不然下一次写入结果会配错。
+    /// 超时只让调用方继续，凭据留在队列里：这条写入的 `didWriteValueFor` 迟早还会到，
+    /// 若先摘掉，迟到的回报就会认领下一条写入的凭据，让它的 completion 提前触发。
     private func expire(_ ticket: WriteTicket) {
-        if let index = writeTickets.firstIndex(where: { $0 === ticket }) {
-            writeTickets.remove(at: index)
-        }
         ticket.fire()
     }
 
@@ -158,7 +163,8 @@ public final class BLEClient: NSObject {
     private func connectOrScan() {
         guard wantsConnection, let central, central.state == .poweredOn, peripheral == nil else { return }
 
-        if let p = central.retrieveConnectedPeripherals(withServices: [Self.serviceUUID]).first {
+        if let p = central.retrieveConnectedPeripherals(withServices: [Self.serviceUUID])
+            .first(where: { $0.identifier != forgottenID }) {
             onLog?("found already-connected peripheral")
             connect(p); return
         }
@@ -193,6 +199,7 @@ public final class BLEClient: NSObject {
         scanTimeout = nil
         guard wantsConnection, state == .searching else { return }
         onLog?("no device found in \(Int(Self.scanWindow))s, scanning again later")
+        forgottenID = nil
         central?.stopScan()
         state = .idle
         reconnectLater(after: Self.scanPause)
@@ -241,12 +248,15 @@ extension BLEClient: CBCentralManagerDelegate {
                                advertisementData: [String: Any], rssi RSSI: NSNumber) {
         let services = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID] ?? []
         let name = advertisementData[CBAdvertisementDataLocalNameKey] as? String ?? p.name
-        guard services.contains(Self.serviceUUID) || name == Self.advertisedName else { return }
+        guard services.contains(Self.serviceUUID) || name == Self.advertisedName,
+              p.identifier != forgottenID else { return }
         onLog?("discovered \(name ?? "device")")
         connect(p)
     }
 
     public func centralManager(_ central: CBCentralManager, didConnect p: CBPeripheral) {
+        guard p === peripheral else { return }
+        forgottenID = nil
         UserDefaults.standard.set(p.identifier.uuidString, forKey: Self.savedIDKey)
         deviceName = p.name ?? deviceName
         onLog?("connected, discovering services")
@@ -254,13 +264,20 @@ extension BLEClient: CBCentralManagerDelegate {
     }
 
     public func centralManager(_ central: CBCentralManager, didFailToConnect p: CBPeripheral, error: Error?) {
+        guard p === peripheral else { return }
         onLog?("connect failed: \(error?.localizedDescription ?? "unknown")")
         peripheral = nil
         state = .idle
         if wantsConnection { reconnectLater(after: 2) }
     }
 
+    /// 只处理当前这台外设的断开。`stop()` 之后才到的旧连接断开回报若照单全收，
+    /// 会把已经换上的新连接清掉、提前放掉它的写入凭据。
     public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral p: CBPeripheral, error: Error?) {
+        guard p === peripheral else {
+            onLog?("ignored a disconnect from a connection that was already closed")
+            return
+        }
         onLog?("disconnected\(error.map { ": \($0.localizedDescription)" } ?? "")")
         peripheral = nil; rx = nil; tx = nil
         resetReassembler()
