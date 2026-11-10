@@ -63,4 +63,13 @@ enum PasswordStore {
     static func delete(account: String = defaultAccount) {
         SecItemDelete(query(account) as CFDictionary)
     }
+
+    /// 删掉本应用存的所有密码：系统密码和各指纹单独设置的密码。
+    /// 旧式登录钥匙串上 SecItemDelete 有时一次只删一条，所以删到找不到为止（设上限防死循环）。
+    static func deleteAll() {
+        let all: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                  kSecAttrService as String: service,
+                                  kSecAttrSynchronizable as String: false]
+        for _ in 0..<256 where SecItemDelete(all as CFDictionary) == errSecSuccess {}
+    }
 }

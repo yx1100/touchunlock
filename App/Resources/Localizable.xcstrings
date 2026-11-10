@@ -1157,6 +1157,28 @@
         }
       }
     },
+    "Password not typed: allow Device Control and Data Access first.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "密码未输入：请先允许「设备控制和数据访问」。"
+          }
+        }
+      }
+    },
+    "Password not typed: click the password field in the dialog first.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "密码未输入：请先点一下弹窗里的密码框。"
+          }
+        }
+      }
+    },
     "Password saved for fingerprint %lld.": {
       "extractionState": "manual",
       "localizations": {

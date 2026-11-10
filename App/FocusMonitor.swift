@@ -140,6 +140,31 @@ final class FocusMonitor {
         return copyString(ax, roleAttribute) == kAXSecureTextFieldSubrole
     }
 
+    private static let textInputRoles: Set<String> = [
+        kAXTextFieldRole, kAXTextAreaRole, kAXComboBoxRole, kAXSecureTextFieldSubrole,
+    ]
+
+    /// 键盘焦点是否落在**别的应用**的文字输入框里。
+    ///
+    /// 授权弹窗代打密码前用它把关：SecurityAgent 的输入框对辅助功能不可见，
+    /// 所以没法正面确认「焦点在弹窗里」，只能反过来排除「焦点在别处的输入框里」。
+    /// 查不到焦点元素（多半正是焦点在弹窗里）时返回 false。
+    static func textInputFocusedOutsideSecurityAgent() -> Bool {
+        guard AXIsProcessTrusted() else { return false }
+        var focused: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(systemWide, focusedElementAttribute, &focused) == .success,
+              let element = focused else { return false }
+        let ax = element as! AXUIElement
+        var pid: pid_t = 0
+        if AXUIElementGetPid(ax, &pid) == .success,
+           NSRunningApplication(processIdentifier: pid)?.bundleIdentifier == "com.apple.SecurityAgent" {
+            return false
+        }
+        let role = copyString(ax, roleAttribute) ?? ""
+        let subrole = copyString(ax, subroleAttribute) ?? ""
+        return textInputRoles.contains(role) || textInputRoles.contains(subrole)
+    }
+
     private static func copyString(_ element: AXUIElement, _ attribute: CFString) -> String? {
         var value: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element, attribute, &value) == .success else { return nil }

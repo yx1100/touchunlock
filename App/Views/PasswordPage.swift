@@ -10,7 +10,7 @@ struct PasswordPage: View {
     @State private var confirmRemove = false
 
     private var invalid: Bool { !input.isEmpty && !PasswordPolicy.isValid(input) }
-    private var canSave: Bool { !input.isEmpty && !invalid && model.isReady }
+    private var canSave: Bool { !input.isEmpty && !invalid && model.isReady && !model.isSavingPassword }
 
     var body: some View {
         Form {

@@ -92,7 +92,8 @@ final class AppModel {
     /// 屏幕正中央的提示面板。
     @ObservationIgnored let hud = HUD()
     /// 设置默认密码期间暂存，设备确认成功后才写入钥匙串，用完即清。
-    @ObservationIgnored private var pendingPassword: String?
+    /// 不加 `@ObservationIgnored`：密码页据 `isSavingPassword` 禁用保存按钮。
+    private var pendingPassword: String?
     @ObservationIgnored private var rebindQueue: [Int] = []
     /// 在等的密码写入。设备的 pw=5/6 回包**不带 id**，所以必须自己记住在等哪一条。
     @ObservationIgnored private var pendingBind: PendingBind?
@@ -101,7 +102,8 @@ final class AppModel {
     private var rebinding = false
     /// 还差一份指纹列表才能开始重绑（改密码时列表尚未取到）。
     private var rebindAfterInfoRefresh = false
-    /// 这一轮重绑下发的密码是「系统密码」还是「各指纹自己的密码」。
+    /// 这一轮重绑里被设备拒绝的条数。链子走完时非 0 就提示用户。
+    @ObservationIgnored private var rebindFailures = 0
     /// 设备当前是否处于武装状态（激活位已置）。避免重复下发 ble=1 / ble=2。
     @ObservationIgnored private var deviceArmed = false
     /// 心跳期间持有的活动凭证。没有它，只驻菜单栏的应用会被系统节流（App Nap），
@@ -113,7 +115,6 @@ final class AppModel {
     /// 指示灯是否正在慢闪。
     @ObservationIgnored private var indicatorPulsing = false
     @ObservationIgnored private var indicatorTimer: Timer?
-    /// 设备上的密码是否已切到「锁屏档案」（所有指纹都绑系统密码）。
     @ObservationIgnored private var started = false
     @ObservationIgnored private var toastTask: Task<Void, Never>?
     /// 心跳计时器：定期向设备发消息。固件据此判断应用是否仍在运行。
@@ -125,13 +126,16 @@ final class AppModel {
     private enum PendingBind: Equatable {
         case enroll(id: Int)   // 录入成功后绑定密码
         case rebind            // 系统密码变了，逐个更新已录入指纹
-        case manual(id: Int)   // 界面上给某枚指纹单独设密码
+        /// 界面上给某枚指纹单独设密码。`custom` 为 nil 表示改回跟随系统密码。
+        /// 设备确认之后才改本机钥匙串，免得设备拒绝或超时后两边对不上。
+        case manual(id: Int, custom: String?)
 
+        /// 日志用，不含密码。
         var label: String {
             switch self {
             case .enroll(let id): return "enroll(\(id))"
             case .rebind: return "rebind"
-            case .manual(let id): return "manual(\(id))"
+            case .manual(let id, let custom): return "manual(\(id), \(custom == nil ? "system" : "custom"))"
             }
         }
     }
@@ -141,6 +145,9 @@ final class AppModel {
     /// 正在把新密码逐个写到已录入的指纹上。此时不能开始新的录入，否则两条
     /// 密码写入链同时在飞，设备的回包不带 id，结果会认错。
     var isRebinding: Bool { rebinding || rebindAfterInfoRefresh }
+    /// 默认密码已发给设备、还在等确认。期间不接受新的保存：pw=2/3 回包不带内容，
+    /// 两条同时在飞就分不清是哪一条的结果。
+    var isSavingPassword: Bool { pendingPassword != nil }
     /// 是否显示屏幕正中央的提示面板。
     var showHUD = UserDefaults.standard.object(forKey: "TouchUnlock.showHUD") as? Bool ?? true {
         didSet {
@@ -491,6 +498,7 @@ final class AppModel {
             post(.warning, String(localized: "The device is not connected."))
             return
         }
+        guard pendingPassword == nil else { return }
         pendingPassword = password
         // 设备忙的时候（例如正卡在一次识别或录入里）这条写入会排队，可能几十秒都没有回包。
         // 没有超时的话界面一直毫无反应，用户只会以为「点了没反应」。
@@ -506,7 +514,8 @@ final class AppModel {
     }
 
     func removeStoredPassword() {
-        PasswordStore.delete()
+        // 各指纹单独设置的密码也一起删掉：界面说的是「本机不再保存副本」。
+        PasswordStore.deleteAll()
         hasStoredPassword = false
         post(.info, String(localized: "Removed the copy on this Mac. The device keeps its own copy."))
     }
@@ -560,7 +569,17 @@ final class AppModel {
     /// 授权弹窗里由应用代打密码：该指纹单独设置的密码，没有就用系统密码。密码不进日志。
     private func typeIntoAuthDialog(for id: Int) {
         guard hasAccessibilityPermission else {
-            post(.warning, String(localized: "Shortcut not sent: allow Device Control and Data Access first."))
+            post(.warning, String(localized: "Password not typed: allow Device Control and Data Access first."))
+            return
+        }
+        // 按键事件发往当前键盘焦点，不一定是弹窗。用户若已点回别的应用的输入框，
+        // 照打会把明文密码连同回车送进那个窗口（例如聊天框直接发出去）。
+        guard !FocusMonitor.textInputFocusedOutsideSecurityAgent() else {
+            log("authorization dialog is not focused; password not typed")
+            post(.warning, String(localized: "Password not typed: click the password field in the dialog first."))
+            if showHUD {
+                hud.show(String(localized: "Password not typed: click the password field in the dialog first."), kind: .warning)
+            }
             return
         }
         guard let password = customPassword(for: id) ?? PasswordStore.load(), !password.isEmpty else {
@@ -605,22 +624,12 @@ final class AppModel {
             post(.warning, String(localized: "The device is not connected."))
             return
         }
-        guard beginPasswordWrite(.manual(id: id)) else { return }
-        do {
-            try PasswordStore.save(password, account: PasswordStore.fingerprintAccount(id))
-        } catch {
-            pendingBind = nil
-            cancelWriteTimeout()
-            log("keychain save failed: \(error)")
-            post(.error, String(localized: "Could not save the password to the keychain."))
-            return
-        }
+        guard beginPasswordWrite(.manual(id: id, custom: password)) else { return }
         send(.setPassword(id: id, password: password))
     }
 
-    /// 让这枚指纹改回「跟随系统密码」：删掉单独设置的副本，再把系统密码绑给它。
+    /// 让这枚指纹改回「跟随系统密码」：把系统密码绑给它，设备确认后再删单独设置的副本。
     func useSystemPassword(for id: Int) {
-        PasswordStore.delete(account: PasswordStore.fingerprintAccount(id))
         guard let system = PasswordStore.load() else {
             post(.warning, String(localized: "Set the unlock password first."))
             return
@@ -629,7 +638,7 @@ final class AppModel {
             post(.warning, String(localized: "The device is not connected."))
             return
         }
-        guard beginPasswordWrite(.manual(id: id)) else { return }
+        guard beginPasswordWrite(.manual(id: id, custom: nil)) else { return }
         send(.setPassword(id: id, password: system))
     }
 
@@ -845,8 +854,13 @@ final class AppModel {
 
         case .deleted(let id, let ok):
             if ok {
-                // 名字跟着指纹一起清掉，免得编号被复用后张冠李戴。
-                if let id { rename(id, to: ""); setShortcut(nil, for: id) }
+                // 名字、快捷键、单独设置的密码跟着指纹一起清掉，免得编号被复用后
+                // 新指纹继承旧设置（尤其是密码：重绑和弹窗代打都会用到它）。
+                if let id {
+                    rename(id, to: "")
+                    setShortcut(nil, for: id)
+                    PasswordStore.delete(account: PasswordStore.fingerprintAccount(id))
+                }
                 post(.success, String(localized: "Fingerprint deleted."))
             } else {
                 post(.error, String(localized: "Could not delete the fingerprint."))
@@ -892,6 +906,7 @@ final class AppModel {
     /// （单独设过用单独那枚，否则跟随系统密码）。
     private func beginRebind(_ ids: [Int]) {
         rebindQueue = ids
+        rebindFailures = 0
         rebinding = !rebindQueue.isEmpty
         rebindNext()
     }
@@ -977,18 +992,41 @@ final class AppModel {
         case .enroll(let id):
             enroll = ok ? .done(id: id) : .failed(String(localized: "The fingerprint was enrolled, but binding the password failed."))
             send(.queryFingerprints)
-        case .manual(let id):
-            if ok { post(.success, String(localized: "Password saved for fingerprint \(id).")) }
+        case .manual(let id, let custom):
+            if ok { manualPasswordConfirmed(id: id, custom: custom) }
             else { post(.error, String(localized: "The device rejected the password.")) }
         case .rebind:
-            if !ok { log("device rejected a password update for an enrolled fingerprint") }
+            if !ok {
+                rebindFailures += 1
+                log("device rejected a password update for an enrolled fingerprint")
+            }
             if rebindQueue.isEmpty {
                 rebinding = false
                 send(.queryFingerprints)
+                if rebindFailures > 0 {
+                    post(.warning, String(localized: "Some fingerprints were not updated. Save the password again."))
+                }
             }
         }
         // 重绑链可能刚才在等这条回包（例如用户同时给某枚指纹单独设了密码）。
         if rebinding { rebindNext() }
+    }
+
+    /// 设备已经换上新密码，本机钥匙串跟着改。
+    private func manualPasswordConfirmed(id: Int, custom: String?) {
+        let account = PasswordStore.fingerprintAccount(id)
+        guard let custom else {
+            PasswordStore.delete(account: account)
+            post(.success, String(localized: "Password saved for fingerprint \(id)."))
+            return
+        }
+        do {
+            try PasswordStore.save(custom, account: account)
+            post(.success, String(localized: "Password saved for fingerprint \(id)."))
+        } catch {
+            log("keychain save failed: \(error)")
+            post(.error, String(localized: "Could not save the password to the keychain."))
+        }
     }
 
     private func enrollSucceeded() {

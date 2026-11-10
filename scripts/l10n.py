@@ -24,6 +24,8 @@ ZH = {
     "Needed only when the reader has to learn this Mac again, for example after it was forgotten in Bluetooth settings.": "仅在识别器需要重新认这台 Mac 时使用，例如曾在系统蓝牙中忘记过它。",
     "Recognized: %@": "已识别：%@",
     "Stop Testing": "结束测试",
+    "Password not typed: allow Device Control and Data Access first.": "密码未输入：请先允许「设备控制和数据访问」。",
+    "Password not typed: click the password field in the dialog first.": "密码未输入：请先点一下弹窗里的密码框。",
     # UI 重构新增（权限改名、指纹改名、版本号）
     "Device Control and Data Access": "设备控制和数据访问",
     "Allowed": "已允许",
