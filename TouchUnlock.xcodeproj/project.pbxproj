@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		03F7EF1BE98750CF9CE0EF62 /* PasswordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07F5AF9A467C02C03179492 /* PasswordStore.swift */; };
 		0F2011809D20225DCE48348C /* Shortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDD90AD0C0357524BA3E63E /* Shortcut.swift */; };
-		1372181A80E2A90E1DD7C147 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 88606FD796C00456D49EC2AD /* Assets.xcassets */; };
 		1436FD3DFDC77C9FCEEEF030 /* LogPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09FA5D1478CED0844CA69D9 /* LogPage.swift */; };
 		17C34202527F98DE03CDB5DE /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 4E3B50E3AF82A02A5D89E7E9 /* Localizable.xcstrings */; };
 		1C1FF56ABCB3FABCABCB9D0D /* OverviewPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B04E95E029C353FBA8B785A /* OverviewPage.swift */; };
@@ -20,6 +19,7 @@
 		6D7C9A1DA987C44678184137 /* KeyboardLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = D05F6D6E0C17B044D5EA2CC3 /* KeyboardLink.swift */; };
 		75F81A7450672D0E807AC91E /* FingerprintsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0DE91383DB9A040AB3EC80A /* FingerprintsPage.swift */; };
 		8E73A387EFBFE17540A5A48B /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761DC2932D73F9453FF560D0 /* Components.swift */; };
+		98CDA5258177E8F600A9BC63 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F8B2D066C5243AD9E95088EE /* AppIcon.icon */; };
 		AC5F6C0F648E9C61451CBBB4 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E590D4CF61C4643C4356D811 /* InfoPlist.xcstrings */; };
 		BBFF5FE2509B95A55F9C314D /* MacStateMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6C39700A8DCB687BDDD937 /* MacStateMonitor.swift */; };
 		C44604AA2A6988F3E4FFEE9E /* FocusMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339B344086C222526CD36BA7 /* FocusMonitor.swift */; };
@@ -39,7 +39,6 @@
 		761DC2932D73F9453FF560D0 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 		7B04E95E029C353FBA8B785A /* OverviewPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewPage.swift; sourceTree = "<group>"; };
 		860EBFE10DFF0CAAF4DB9F90 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
-		88606FD796C00456D49EC2AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		91BA8A72F67943047AF06702 /* PasswordPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordPage.swift; sourceTree = "<group>"; };
 		99C96B6CB7C1B46F65C48F3A /* TouchUnlockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchUnlockApp.swift; sourceTree = "<group>"; };
 		A138F3D26BF414BA34C0DE9A /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -50,6 +49,7 @@
 		E0DE91383DB9A040AB3EC80A /* FingerprintsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintsPage.swift; sourceTree = "<group>"; };
 		E4824E7B1F33EDA8890EA850 /* TouchUnlock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TouchUnlock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E590D4CF61C4643C4356D811 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		F8B2D066C5243AD9E95088EE /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		FB937D81F70E0A391E9C72DC /* touchunlock */ = {isa = PBXFileReference; lastKnownFileType = folder; name = touchunlock; path = .; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -125,7 +125,7 @@
 		D0A951B5FBE510325D840441 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				88606FD796C00456D49EC2AD /* Assets.xcassets */,
+				F8B2D066C5243AD9E95088EE /* AppIcon.icon */,
 				E590D4CF61C4643C4356D811 /* InfoPlist.xcstrings */,
 				4E3B50E3AF82A02A5D89E7E9 /* Localizable.xcstrings */,
 			);
@@ -197,7 +197,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1372181A80E2A90E1DD7C147 /* Assets.xcassets in Resources */,
+				98CDA5258177E8F600A9BC63 /* AppIcon.icon in Resources */,
 				AC5F6C0F648E9C61451CBBB4 /* InfoPlist.xcstrings in Resources */,
 				17C34202527F98DE03CDB5DE /* Localizable.xcstrings in Resources */,
 			);
